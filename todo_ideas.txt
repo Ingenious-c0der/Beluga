@@ -1,0 +1,5 @@
+relays can be a neat way to achieve recursive turing machines. 
+to avoid endless pipelining, use the consume history of the machine 
+machines are currently executed currently in serial manner as they appear, can be changed with adding a run construct
+modernize the cpp used (optimization)
+concurrent excecution for independent machine tree topologies 
