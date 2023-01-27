@@ -3,7 +3,7 @@
 
 
 Beluga Language is an esoteric language based on fundamental implementations of a turing machine. 
-As of now, its in active development, and mimics the model of a Linear Bounded Automata and sooner that of a general 
+As of now, its in active development (Just Started Out!), and mimics the model of a Linear Bounded Automata and sooner that of a general 
 turing machine(with finite tape). 
 
 You now have the power to directly write and run turing machines!
