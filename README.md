@@ -8,7 +8,7 @@ turing machine(with finite tape).
 
 You now have the power to directly write and run turing machines!
 
-### Sample Beluga Code (According to current decisions)
+### Sample Beluga Code (According to current design decisions)
 
 first.beluga
 ```c#
