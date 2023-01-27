@@ -1,4 +1,4 @@
-# Beluga Language
+# Beluga
 ![logo](https://user-images.githubusercontent.com/76046349/215174192-1318ff0d-f4c1-466f-8896-a5893899429a.png)
 
 
