@@ -8,8 +8,7 @@
 #include "parser.h"
 #include "types.h"
 #include "lexer.cpp"
-
-
+#include <stack>
 
 // std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
 // {
@@ -158,23 +157,84 @@ std::vector<LEXER_Element> sanitizer_primary(std::vector<LEXER_Element> unclean_
 
     return san_primary_tokens;
 }
+
 // unknown token classification based on the positions and grammar of the language
 std::vector<LEXER_Element> sanitizer_secondary(std::vector<LEXER_Element> partial_unknown_tokens)
 {
-    // todo
+    // parenthesis matching and checks
+    std::stack<LEXER_Element> parenthesis_stack;
+    //the error location detection is quite garbage as of now 
+
+    try
+    {
+        for (int i = 0; i < partial_unknown_tokens.size(); i++)
+        {
+            if (partial_unknown_tokens[i].type == Token::CPL_TOKEN)
+            {
+                parenthesis_stack.push(partial_unknown_tokens[i]);
+            }
+            else if (partial_unknown_tokens[i].type == Token::CPR_TOKEN)
+            {
+                if (parenthesis_stack.top().type == Token::CPL_TOKEN)
+                {
+                    parenthesis_stack.pop();
+                }
+                else
+                {
+                    throw std::runtime_error("Syntax Error : Mismatched Parenthesis , No opening bracket found for  " + partial_unknown_tokens[i - 1].value + " >> ) <<  " + ( i+1 > partial_unknown_tokens.size() - 1 ?"END": partial_unknown_tokens[i + 1].value));
+                }
+            }
+            else if (partial_unknown_tokens[i].type == Token::CBL_TOKEN)
+            {
+                parenthesis_stack.push(partial_unknown_tokens[i]);
+              
+            }
+            else if (partial_unknown_tokens[i].type == Token::CBR_TOKEN)
+            {
+                if (parenthesis_stack.top().type == Token::CBL_TOKEN)
+                {
+                    parenthesis_stack.pop();
+                }
+                else
+                {
+                    throw std::runtime_error("Syntax Error : Mismatched Parenthesis , No opening bracket found for " + partial_unknown_tokens[i - 1].value + " >> } << " + (i+1 > partial_unknown_tokens.size() - 1?" END ": partial_unknown_tokens[i + 1].value));
+                }
+            }
+        }
+
+        if (!parenthesis_stack.empty())
+        {
+             std::cout<< "here1"<<std::endl;
+            std::string error_top = parenthesis_stack.top().value;
+            throw std::runtime_error("Syntax Error : Missing Appropriate Parenthesis for " + error_top + " at the end of the file");
+        }
+        else
+        {
+            std::cout << "Brackets match test passed" << std::endl;
+        }
+    }
+    catch (std::runtime_error e)
+    {
+        std::cout<< "here"<<std::endl;
+        std::cout << e.what() << std::endl;
+        exit(1);
+    }
+
+    return partial_unknown_tokens;
 }
 
 // checks if all the components required to build each machine are present : last stage before machine building is done in main
 //  parser function
-std::vector<LEXER_Element> sanitizer_tertiary(std::vector<LEXER_Element> ordered_known_tokens)
-{
-    // todo
-}
-
-// testing 
-// int main()
+// std::vector<LEXER_Element> sanitizer_tertiary(std::vector<LEXER_Element> ordered_known_tokens)
 // {
-//     auto x = lex("../examples/first.beluga");
-//     auto y = condensor(x);
-//     auto z = sanitizer_primary(y);
+//     // todo
 // }
+
+// testing
+int main()
+{
+    auto x = lex("../examples/first.beluga");
+    auto y = condensor(x);
+    auto z = sanitizer_primary(y);
+    sanitizer_secondary(z);
+}

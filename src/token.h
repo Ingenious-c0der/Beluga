@@ -40,6 +40,13 @@ enum class Token
     NULL_TOKEN, 
     ASTERISK_TOKEN,
     CONSOLE_TOKEN, 
+    TAPE_PUMPING_TOKEN,
+    STATE_TOKEN,
+    OUTPUT_SYMBOL_TOKEN,
+    TRANSITION_DIRECTION_TOKEN, 
+    TRANSITION_PUMPING_TOKEN ,
+    Q_SET_PUMPING_TOKEN, 
+
 };
 // supports string conversion
 constexpr const char *tokenToString(Token token)
