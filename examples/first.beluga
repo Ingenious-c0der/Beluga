@@ -4,14 +4,14 @@ machine (beluga) => {
     def: (
             {q0,q1} /* finite set of states */
             {a,b} /* finite set of input symbols */
-            (
+            {
                 (q0,a,q0,a,->,t0,t0), /* transition */
                 (q0,b,q0,b,<-,t0,t1), /* transition */
                 (q0,^,q1,^,->,t0,t1), /* transition */
                 (q1,a,q1,a,->,t1,t1), /* transition */
                 (q1,b,q1,b,->,t1,t1), /* transition */
                 (q1,^,q1,^,->,t0,t0), /* transition */
-            ) /* finite set of transitions */
+            } /* finite set of transitions */
             (q0) /* initial state  */
             (^) /* blank symbol  */
             (q1) /* final states */

@@ -57,7 +57,10 @@ enum class Token
     INITIAL_STATE_DEF_TOKEN,
     BLANK_SYMBOL_DEF_TOKEN,
     FINAL_STATE_DEF_TOKEN,
-
+    EXTERNAL_TURING_MACHINE_NAME_TOKEN, 
+    READ_SYMBOL_TOKEN, // for the tape read symbol in transitions
+    WRITE_SYMBOL_TOKEN,
+    DECISION_TOKEN,  // for the tape write symbol in transitions
 
 };
 // supports string conversion
@@ -127,6 +130,28 @@ constexpr const char *tokenToString(Token token)
         return "TAPE_TOKEN";
     case Token::ASTERISK_TOKEN:
         return "ASTERISK_TOKEN";
+    case Token::READ_SYMBOL_TOKEN:
+        return "READ_SYMBOL_TOKEN";
+    case Token::WRITE_SYMBOL_TOKEN:
+        return "WRITE_SYMBOL_TOKEN";
+    case Token::EXTERNAL_TURING_MACHINE_NAME_TOKEN:
+        return "EXTERNAL_TURING_MACHINE_NAME_TOKEN";
+    case Token::DECISION_TOKEN:
+        return "DECISION_TOKEN";
+    case Token::FINAL_STATE_TOKEN:
+        return "FINAL_STATE_TOKEN";
+    case Token::OUTPUT_CONFIG_TOKEN:
+        return "OUTPUT_CONFIG_TOKEN";
+    case Token::STATE_TOKEN:
+        return "STATE_TOKEN";
+    case Token::TRANSITION_DIRECTION_TOKEN:
+        return "TRANSITION_DIRECTION_TOKEN";
+    case Token::TAPE_NAME_TOKEN:
+        return "TAPE_NAME_TOKEN";
+    case Token::TAPE_CONTENTS_TOKEN:
+        return "TAPE_CONTENTS_TOKEN";
+    case Token::IGNORE_UNKNOWNS_TOKEN:
+        return "IGNORE_UNKNOWNS_TOKEN";
     default : 
         return "UNLISTED_TOKEN";
     }

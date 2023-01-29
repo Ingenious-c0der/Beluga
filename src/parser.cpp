@@ -8,6 +8,7 @@
 #include "parser.h"
 #include "types.h"
 #include "lexer.cpp"
+#include "components/identifier.h"
 #include <stack>
 
 // std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
@@ -79,7 +80,7 @@ std::vector<LEXER_Element> sanitizer_primary(std::vector<LEXER_Element> unclean_
             {
                 san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::DEF_TOKEN));
             }
-            else if (unclean_tokens[i].value == "ignoreUnkowns")
+            else if (unclean_tokens[i].value == "ignoreUnknowns")
             {
                 san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::IGNORE_UNKNOWNS_TOKEN));
             }
@@ -149,11 +150,7 @@ std::vector<LEXER_Element> sanitizer_primary(std::vector<LEXER_Element> unclean_
             san_primary_tokens.push_back(unclean_tokens[i]);
         }
     }
-    // display the tokens
-    for (auto token : san_primary_tokens)
-    {
-        std::cout << token.value << " - " << tokenToString(token.type) << std::endl;
-    }
+
 
     return san_primary_tokens;
 }
@@ -204,7 +201,7 @@ std::vector<LEXER_Element> sanitizer_secondary(std::vector<LEXER_Element> partia
 
         if (!parenthesis_stack.empty())
         {
-             std::cout<< "here1"<<std::endl;
+           
             std::string error_top = parenthesis_stack.top().value;
             throw std::runtime_error("Syntax Error : Missing Appropriate Parenthesis for " + error_top + " at the end of the file");
         }
@@ -212,13 +209,27 @@ std::vector<LEXER_Element> sanitizer_secondary(std::vector<LEXER_Element> partia
         {
             std::cout << "Brackets match test passed" << std::endl;
         }
+
+        Identifier().identify(partial_unknown_tokens) ;
+        auto known_tokens = partial_unknown_tokens ;
+        // cout known tokens 
+        for (auto token : known_tokens)
+        {
+            std::cout << token.value << " - " << tokenToString(token.type) << std::endl;
+        }
+
+
+
+
     }
     catch (std::runtime_error e)
     {
-        std::cout<< "here"<<std::endl;
+      
         std::cout << e.what() << std::endl;
         exit(1);
     }
+    //cout tokens ; 
+    
 
     return partial_unknown_tokens;
 }
