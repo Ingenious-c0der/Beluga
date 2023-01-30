@@ -61,7 +61,8 @@ enum class Token
     READ_SYMBOL_TOKEN, // for the tape read symbol in transitions
     WRITE_SYMBOL_TOKEN,
     DECISION_TOKEN,  // for the tape write symbol in transitions
-
+    RELAY_REJECT_PUMPING_TOKEN,
+    RELAY_ACCEPT_PUMPING_TOKEN,
 };
 // supports string conversion
 constexpr const char *tokenToString(Token token)

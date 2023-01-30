@@ -7,6 +7,7 @@
 #include <iostream>
 #include "parser.h"
 #include "types.h"
+#include "components/verifier.h"
 #include "lexer.cpp"
 #include "components/identifier.h"
 #include <stack>
@@ -212,14 +213,77 @@ std::vector<LEXER_Element> sanitizer_secondary(std::vector<LEXER_Element> partia
 
         Identifier().identify(partial_unknown_tokens) ;
         auto known_tokens = partial_unknown_tokens ;
-        // cout known tokens 
-        for (auto token : known_tokens)
+        // // cout known tokens 
+        // for (auto token : known_tokens)
+        // {
+        //     std::cout << token.value << " - " << tokenToString(token.type) << std::endl;
+        // }
+        //now verifiying the tokens.
+        for(int elem = 0 ; elem < known_tokens.size() ; elem++)
         {
-            std::cout << token.value << " - " << tokenToString(token.type) << std::endl;
+            std::vector<Token> token_collection = {}; 
+            if(known_tokens[elem].type == Token::MACHINE_TOKEN)
+            {
+                int i = 0 ; 
+                while(known_tokens[i].type != Token::CBL_TOKEN)
+                {
+                    token_collection.push_back(known_tokens[i].type);
+                    i++;
+                }
+                token_collection.push_back(Token::CBL_TOKEN);
+                bool verified = Verifier().verify_grammar(token_collection, Grammar_Type::MACHINE_DEF_GRAMMAR);
+                if(!verified)
+                {
+                    throw std::runtime_error("Syntax Error : Machine Definition Verification Failed");
+                }
+            }
+            else if(known_tokens[elem].type == Token::CONSUMES_TOKEN)
+            {
+                
+                while(known_tokens[elem].type != Token::CPR_TOKEN)
+                {
+                    token_collection.push_back(known_tokens[elem].type);
+                    elem++;
+                }
+                token_collection.push_back(Token::CPR_TOKEN);
+                bool verified = Verifier().verify_grammar(token_collection, Grammar_Type::CONSUMES_DEF_GRAMMAR);
+                if(!verified)
+                {
+                    throw std::runtime_error("Syntax Error : Consumes Definition Verification Failed");
+                }
+            }
+            else if(known_tokens[elem].type == Token::TAPE_TOKEN)
+            {
+                while(known_tokens[elem].type != Token::CPR_TOKEN)
+                {
+                    token_collection.push_back(known_tokens[elem].type);
+                    elem++;
+                }
+                token_collection.push_back(Token::CPR_TOKEN);
+                bool verified = Verifier().verify_grammar(token_collection, Grammar_Type::TAPE_DEF_GRAMMAR);
+                if(!verified)
+                {
+                    throw std::runtime_error("Syntax Error : Tape Definition Verification Failed");
+                }
+            }
+            else if(known_tokens[elem].type == Token::DEF_TOKEN)
+            {
+                while(known_tokens[elem].type != Token::IGNORE_UNKNOWNS_TOKEN)
+                {
+                    token_collection.push_back(known_tokens[elem].type);
+                    elem++;
+                }
+                bool verified = Verifier().verify_grammar(token_collection, Grammar_Type::DEF_DEF_GRAMMAR);
+                if(!verified)
+                {
+                    throw std::runtime_error("Syntax Error : Def Definition Verification Failed");
+                }
+            }
+        
+            
         }
 
-
-
+    //rephrase changed tokens back . (direction and decision tokens)
 
     }
     catch (std::runtime_error e)
@@ -228,7 +292,8 @@ std::vector<LEXER_Element> sanitizer_secondary(std::vector<LEXER_Element> partia
         std::cout << e.what() << std::endl;
         exit(1);
     }
-    //cout tokens ; 
+
+
     
 
     return partial_unknown_tokens;
