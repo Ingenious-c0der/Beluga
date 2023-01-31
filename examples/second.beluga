@@ -24,7 +24,7 @@ machine (beluga) => {
 }
 
 machine (beluga_second) => {
-    consumes : (null) 
+    consumes : (beluga) 
     tape : ({t0,abbb^bab^bab},{t1,abbb^bbedr^})
     def: (
             {q0,q1} /* finite set of states */

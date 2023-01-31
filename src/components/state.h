@@ -12,6 +12,7 @@ class State
 public:
     State();
     State(std::string, bool);
+    friend class Machine ;
 
 };
 State::State()
@@ -20,7 +21,7 @@ State::State()
 
 }
 
-State::State(std::string, bool isFinal = false)
+State::State(std::string name, bool isFinal = false)
 {
     this->name = name;
     this->isFinal = isFinal;

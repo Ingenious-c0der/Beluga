@@ -16,6 +16,7 @@ class Transition{
     Tape currentTape;
     public: 
     Transition(State,Symbol,State,Symbol,Symbol,Tape,Tape);
+    friend class Machine ;
 
 };  
 

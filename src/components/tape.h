@@ -10,6 +10,7 @@ class Tape
     std::string tape_contents;
     std::string current;
     bool is_reference = false; 
+    friend class Machine ;
 
 public:
     Tape(); // default constructor

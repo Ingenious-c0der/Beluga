@@ -370,7 +370,7 @@ std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
         if (san_sec[i].type == Token::MACHINE_NAME_TOKEN)
         {
             Machine temp_machine(san_sec[i].value);
-            std::cout<< "Machine Name : " << temp_machine.name << std::endl;
+
             while (san_sec[i].type != Token::MACHINE_TOKEN)
             {
                 if (san_sec[i].type == Token::CONSUMES_TOKEN)
@@ -393,7 +393,7 @@ std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
                         }
                         temp_machine.consumes = Consumes(temp_consumes);
                     }
-                    std::cout<< "Consumes set" <<std::endl;
+      
                 }
                 else if (san_sec[i].type == Token::TAPE_TOKEN)
                 {
@@ -410,7 +410,7 @@ std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
                         i++;
                     }
                     temp_machine.tapes = temp_tape;
-                    std::cout<< "Tapes set" <<std::endl;
+                
                 }
                 else if (san_sec[i].type == Token::DEF_TOKEN)
                 {
@@ -456,14 +456,14 @@ std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
                     temp_machine.final_states = temp_final_states;
                     temp_machine.blank_symbol = temp_blank_symbol;
                     temp_machine.transitions = temp_transitions;
-                    std::cout<< "Def set" <<std::endl;
+          
                     i--;
                 }
                 else if (san_sec[i].type == Token::IGNORE_UNKNOWNS_TOKEN)
                 {
                     temp_machine.ignore_unknowns = san_sec[i + 3].value == "accept" ? true : false;
                     i += 3;
-                    std::cout<< "Ignore unknowns set" <<std::endl;
+                 
                 }
                 else if (san_sec[i].type == Token::RELAY_TOKEN)
                 {
@@ -499,7 +499,7 @@ std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
                     temp_relay.to_relay_machine_on_accept = on_accept;
                     temp_relay.to_relay_machine_on_reject = on_reject;
                     temp_machine.relay = temp_relay;
-                    std::cout<< "Relay set" <<std::endl;
+                
                     break; 
                 }
                 i++;
@@ -518,5 +518,8 @@ int main()
     auto x = lex("../examples/second.beluga");
 
     auto mac = parse(x); // returns a vector of Machine Objects
-    std::cout << mac.size() << std::endl;
+    for(auto m : mac)
+    {
+       m.to_string() ; 
+    }
 }

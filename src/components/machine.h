@@ -10,6 +10,7 @@ class Consumes
 public:
     Consumes();
     Consumes(std::vector<Machine>);
+    friend class Machine; 
 };
 
 Consumes::Consumes()
@@ -34,6 +35,7 @@ public:
     bool relay_to_console_on_reject = false;
      std::vector<Machine> to_relay_machine_on_accept;
     std::vector<Machine> to_relay_machine_on_reject;
+    friend class Machine ;
 };
 
 Relay::Relay()
@@ -63,7 +65,7 @@ public:
     bool ignore_unknowns = false;
     bool is_forward_reference = true;
     std::string name;
-    //void to_string();
+    void to_string();
     Machine(std::string);
     Machine(Consumes, Relay, State, Symbol, std::vector<Tape>, std::vector<Transition>, std::vector<State>, std::vector<Symbol>, std::vector<State>, bool, bool);
 };
@@ -87,54 +89,54 @@ Machine::Machine(Consumes consumes, Relay relay, State initial_state, Symbol bla
     this->is_forward_reference = is_forward_reference;
 }
 
-// void Machine::to_string()
-// {
-//     std::cout << "Machine name: " << this->name << std::endl;
-//     std::cout << "Consumes: " << std::endl;
-//     for (auto machine : consumes.consumed_machines)
-//     {
-//         std::cout << machine.name << std::endl;
-//     }
-//     std::cout << "Relay: " << std::endl;
-//     std::cout << "Relay to console on accept: " << this->relay.relay_to_console_on_accept << std::endl;
-//     std::cout << "Relay to console on reject: " << this->relay.relay_to_console_on_reject << std::endl;
-//     std::cout << "Relay to machines on accept: " << std::endl;
-//     for (auto machine : this->relay.to_relay_machine_on_accept)
-//     {
-//         std::cout << machine.name << std::endl;
-//     }
-//     std::cout << "Relay to machines on reject: " << std::endl;
-//     for (auto machine : this->relay.to_relay_machine_on_reject)
-//     {
-//         std::cout << machine.name << std::endl;
-//     }
-//     std::cout << "Initial state: " << this->initial_state.name << std::endl;
-//     std::cout << "Blank symbol: " << this->blank_symbol.name << std::endl;
-//     std::cout << "Tapes: " << std::endl;
-//     for (auto tape : this->tapes)
-//     {
-//         std::cout << tape.name << std::endl;
-//     }
-//     std::cout << "Transitions: " << std::endl;
-//     for (auto transition : this->transitions)
-//     {
-//         std::cout << transition.from_state.name << " " << transition.to_state.name << " " << transition.symbol.name << " " << transition.direction << std::endl;
-//     }
-//     std::cout << "States: " << std::endl;
-//     for (auto state : this->states)
-//     {
-//         std::cout << state.name << std::endl;
-//     }
-//     std::cout << "Symbols: " << std::endl;
-//     for (auto symbol : this->symbols)
-//     {
-//         std::cout << symbol.name << std::endl;
-//     }
-//     std::cout << "Final states: " << std::endl;
-//     for (auto state : this->final_states)
-//     {
-//         std::cout << state.name << std::endl;
-//     }
-// }
+void Machine::to_string()
+{
+    std::cout << "Machine name: " << this->name << std::endl;
+    std::cout << "Consumes: " << std::endl;
+    for (auto machine : consumes.consumed_machines)
+    {
+        std::cout << machine.name << std::endl;
+    }
+    std::cout << "Relay: " << std::endl;
+    std::cout << "Relay to console on accept: " << this->relay.relay_to_console_on_accept << std::endl;
+    std::cout << "Relay to console on reject: " << this->relay.relay_to_console_on_reject << std::endl;
+    std::cout << "Relay to machines on accept: " << std::endl;
+    for (auto machine : this->relay.to_relay_machine_on_accept)
+    {
+        std::cout << machine.name << std::endl;
+    }
+    std::cout << "Relay to machines on reject: " << std::endl;
+    for (auto machine : this->relay.to_relay_machine_on_reject)
+    {
+        std::cout << machine.name << std::endl;
+    }
+    std::cout << "Initial state: " << this->initial_state.name << std::endl;
+    std::cout << "Blank symbol: " << this->blank_symbol.name << std::endl;
+    std::cout << "Tapes: " << std::endl;
+    for (auto tape : this->tapes)
+    {
+        std::cout << tape.name << std::endl;
+    }
+    std::cout << "Transitions: " << std::endl;
+    for (auto transition : this->transitions)
+    {
+        std::cout << transition.currentState.name << " " << transition.nextState.name << " " << transition.input_symbol.name << " " << transition.output_symbol.name<<" " << transition.Direction.name << std::endl;
+    }
+    std::cout << "States: " << std::endl;
+    for (auto state : this->states)
+    {
+        std::cout << state.name << std::endl;
+    }
+    std::cout << "Symbols: " << std::endl;
+    for (auto symbol : this->symbols)
+    {
+        std::cout << symbol.name << std::endl;
+    }
+    std::cout << "Final states: " << std::endl;
+    for (auto state : this->final_states)
+    {
+        std::cout << state.name << std::endl;
+    }
+}
 
 #endif
