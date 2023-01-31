@@ -6,7 +6,7 @@
 //@data class 
 class Transition{ 
 
-    Transition(State,Symbol,State,Symbol,Symbol,Tape,Tape);
+    
     State currentState;
     Symbol input_symbol;
     Symbol output_symbol; 
@@ -14,7 +14,8 @@ class Transition{
     Symbol Direction;
     Tape nextTape;
     Tape currentTape;
-
+    public: 
+    Transition(State,Symbol,State,Symbol,Symbol,Tape,Tape);
 
 };  
 
@@ -29,4 +30,4 @@ Transition:: Transition(State currentState,Symbol input_symbol,State nextState,S
     this->nextTape = nextTape;
 }
 
-#endif; 
+#endif

@@ -6,34 +6,33 @@
 class Tape
 {
     int current_index;
-    bool is_final;
     std::string name;
     std::string tape_contents;
     std::string current;
+    bool is_reference = false; 
 
 public:
     Tape(); // default constructor
-    Tape(std::string, std::string, bool, int);
-    char *move_left();
-    char *move_right();
+    Tape(std::string, std::string, int);
+    Tape(std::string); // for forward references
+    void move_left();
+    void move_right();
     std::string get_current();
-    bool get_is_final();
+   
     void update_current(std::string);
 };
 
 Tape::Tape()
 {
     this->name = "tape_undefined";
-    this->is_final = false;
     this->tape_contents = "";
     this->current_index = 0;
     this->current = "";
 }
 
-Tape::Tape(std::string name, std::string tape_contents, bool is_final, int index = 0)
+Tape::Tape(std::string name, std::string tape_contents,int index = 0)
 {
     this->name = name;
-    this->is_final = is_final;
     this->tape_contents = tape_contents;
     this->tape_contents.insert(0, "$");
     this->tape_contents.append("$");
@@ -41,8 +40,13 @@ Tape::Tape(std::string name, std::string tape_contents, bool is_final, int index
     this->current = tape_contents[index + 1];
     // allow for dynamic tape expansion later ,right now its LBA tape
 }
+Tape::Tape(std::string name)
+{
+    this->name = name;
+    this->is_reference = true;
+}
 
-char *Tape::move_left()
+void Tape::move_left()
 {
     try
     {
@@ -62,7 +66,7 @@ char *Tape::move_left()
         exit(1); // exit with error
     }
 }
-char *Tape::move_right()
+void Tape::move_right()
 {
     try
     {
@@ -88,16 +92,9 @@ void Tape::update_current(std::string new_current)
     this->current = new_current;
 }
 
-
-
 std::string Tape::get_current()
 {
     return current;
 }
 
-bool Tape::get_is_final()
-{
-    return is_final ? true : false;
-}
-
-#endif;
+#endif

@@ -41,4 +41,4 @@ Define::Define(std::vector<State> states, std::vector<Symbol> input_symbols, std
     this->final_states = final_states;
 }
 
-#endif;
+#endif

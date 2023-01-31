@@ -62,7 +62,8 @@ enum class Token
     WRITE_SYMBOL_TOKEN,
     DECISION_TOKEN,  // for the tape write symbol in transitions
     RELAY_REJECT_PUMPING_TOKEN,
-    RELAY_ACCEPT_PUMPING_TOKEN,
+    RELAY_ACCEPT_PUMPING_TOKEN, 
+    TRANS_STATE_TOKEN, 
 };
 // supports string conversion
 constexpr const char *tokenToString(Token token)
@@ -151,6 +152,8 @@ constexpr const char *tokenToString(Token token)
         return "TAPE_NAME_TOKEN";
     case Token::TAPE_CONTENTS_TOKEN:
         return "TAPE_CONTENTS_TOKEN";
+    case Token::TRANS_STATE_TOKEN: 
+        return "TRANS_STATE_TOKEN"; 
     case Token::IGNORE_UNKNOWNS_TOKEN:
         return "IGNORE_UNKNOWNS_TOKEN";
     default : 

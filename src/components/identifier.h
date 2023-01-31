@@ -9,11 +9,11 @@ class Identifier
 {
 
 public:
-    static void identify(std::vector<LEXER_Element> &);
+    static int identify(std::vector<LEXER_Element> &);
 };
 // this function is optimistic while assuming grammar while identifying, wrong grammar may pass this stage but will not pass in verifier
 
-void Identifier::identify(std::vector<LEXER_Element> &unid_elements)
+int Identifier::identify(std::vector<LEXER_Element> &unid_elements)
 {
     int total_machines =  0; // total machines in the file
     try
@@ -94,9 +94,9 @@ void Identifier::identify(std::vector<LEXER_Element> &unid_elements)
                 {
                     if (unid_elements[i].type == Token::CPL_TOKEN)
                     {
-                        unid_elements[i + 1].type = Token::STATE_TOKEN;
+                        unid_elements[i + 1].type = Token::TRANS_STATE_TOKEN;
                         unid_elements[i + 3].type = Token::READ_SYMBOL_TOKEN;
-                        unid_elements[i + 5].type = Token::STATE_TOKEN;
+                        unid_elements[i + 5].type = Token::TRANS_STATE_TOKEN;
                         unid_elements[i + 7].type = Token::WRITE_SYMBOL_TOKEN;
                         unid_elements[i + 9].type = Token::TRANSITION_DIRECTION_TOKEN;
                         unid_elements[i + 11].type = Token::TAPE_NAME_TOKEN;
@@ -107,7 +107,7 @@ void Identifier::identify(std::vector<LEXER_Element> &unid_elements)
                         }
                         else
                         {
-                            std::cout << i << " " << unid_elements[i].value << " " << tokenToString(unid_elements[i].type) << std::endl;
+                          
                             throw ERROR_TYPES::INVALID_TRANSITION_DEFINITION;
                         }
                     }
@@ -118,7 +118,7 @@ void Identifier::identify(std::vector<LEXER_Element> &unid_elements)
                     }
                     else
                     {
-                        std::cout << i << " " << unid_elements[i].value << " " << tokenToString(unid_elements[i].type) << std::endl;
+                     
                         throw ERROR_TYPES::INVALID_TRANSITION_DEFINITION;
                     }
                 }
@@ -249,6 +249,7 @@ void Identifier::identify(std::vector<LEXER_Element> &unid_elements)
                 throw ERROR_TYPES::MISSING_COMPONENT;
             }
         }
+        return total_machines; 
     }
     catch (ERROR_TYPES &e)
     {

@@ -92,6 +92,10 @@ enum class Subtype
     ACCEPT,
     REJECT,
     UNDEFINED, 
+    READ_SYMBOL, 
+    WRITE_SYMBOL, 
+    DIRECTION_LEFT, 
+    DIRECTION_RIGHT,
 };
 
 #endif

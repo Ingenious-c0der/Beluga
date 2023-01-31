@@ -1,7 +1,7 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 #include <iostream>
-#include "types.h"
+#include "../types.h"
 
 class Symbol
 {
@@ -26,4 +26,4 @@ Symbol::Symbol(std::string name, Subtype subtype)
     this->subtype = subtype;
 }
 
-#endif;
+#endif

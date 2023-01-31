@@ -6,7 +6,7 @@
 static const std::vector<Token> MACHINE_DEF_GRAMMAR = {Token::MACHINE_TOKEN, Token::CPL_TOKEN, Token::MACHINE_NAME_TOKEN, Token::CPR_TOKEN, Token::FAT_ARROW_TOKEN, Token::CBL_TOKEN};
 static const std::vector<Token> TAPE_DEF_GRAMMAR = {Token::TAPE_TOKEN, Token::COLON_TOKEN, Token::CPL_TOKEN, Token::TAPE_PUMPING_TOKEN, Token::CPR_TOKEN};
 static const std::vector<Token> TAPE_UNIT_DEF_GRAMMAR = {Token::CBL_TOKEN, Token::TAPE_NAME_TOKEN, Token::COMMA_TOKEN, Token::TAPE_CONTENTS_TOKEN, Token::CBR_TOKEN};
-static const std::vector<Token> TRANSITION_UNIT_DEF_GRAMMAR = {Token::CPL_TOKEN, Token::STATE_TOKEN, Token::COMMA_TOKEN, Token::READ_SYMBOL_TOKEN, Token::COMMA_TOKEN, Token::WRITE_SYMBOL_TOKEN, Token::COMMA_TOKEN, Token::TRANSITION_DIRECTION_TOKEN, Token::COMMA_TOKEN, Token::TAPE_NAME_TOKEN, Token::TAPE_CONTENTS_TOKEN, Token::CPR_TOKEN};
+static const std::vector<Token> TRANSITION_UNIT_DEF_GRAMMAR = {Token::CPL_TOKEN, Token::TRANS_STATE_TOKEN, Token::COMMA_TOKEN, Token::READ_SYMBOL_TOKEN, Token::COMMA_TOKEN, Token::TRANS_STATE_TOKEN , Token::COMMA_TOKEN , Token::WRITE_SYMBOL_TOKEN, Token::COMMA_TOKEN, Token::TRANSITION_DIRECTION_TOKEN, Token::COMMA_TOKEN, Token::TAPE_NAME_TOKEN,Token::COMMA_TOKEN,  Token::TAPE_NAME_TOKEN, Token::CPR_TOKEN};
 static const std::vector<Token> TRANSITION_DEF_GRAMMAR = {Token::CBL_TOKEN, Token::TRANSITION_PUMPING_TOKEN, Token::CBR_TOKEN};
 static const std::vector<Token> Q_SET_DEF_GRAMMAR = {Token::CBL_TOKEN, Token::Q_SET_PUMPING_TOKEN, Token::CBR_TOKEN};
 static const std::vector<Token> SIGMA_SET_DEF_GRAMMAR = {Token::CBL_TOKEN, Token::SIGMA_SET_PUMPING_TOKEN, Token::CBR_TOKEN};
@@ -70,7 +70,7 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
                 return false;
             }
         }
-        std::cout << "CHECK : " << tokens.size() - 1 << " with " << i << std::endl;
+       
         if (tokens[i] == Token::CPR_TOKEN && tokens.size() - 1 == i)
         {
             return true;
@@ -89,7 +89,7 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
             i++;
         }
         int j = 0;
-        std::cout << tokens.size() << std::endl;
+     
         while (tokens[i] != Token::CPR_TOKEN)
         {
 
@@ -112,7 +112,7 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
             }
             i++;
         }
-        std::cout << "CHECK : " << tokens.size() - 1 << " with " << i << std::endl;
+
         if (tokens[i] == Token::CPR_TOKEN && i == tokens.size() - 1)
         {
             return true;
@@ -125,31 +125,34 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
     else if (GT == Grammar_Type::DEF_DEF_GRAMMAR)
     {
         int i = 0;
-        while (tokens[i] != Token::Q_SET_DEF_TOKEN)
+        while (DEF_DEF_GRAMMAR[i] != Token::Q_SET_DEF_TOKEN)
         {
-            if (tokens[i] != TRANSITION_DEF_GRAMMAR[i])
+            if (tokens[i] != DEF_DEF_GRAMMAR[i])
             {
                 return false;
             }
             i++;
         }
+ 
         // matching grammar for Q set
-
+        i++;
         while (tokens[i] != Token::CBR_TOKEN)
         {
             if (tokens[i] == Token::COMMA_TOKEN && tokens[i + 1] == Token::STATE_TOKEN)
             {
                 i++;
             }
-            else if (tokens[i] == Token::STATE_TOKEN && tokens[i - 1] == Token::COMMA_TOKEN)
+            else if (tokens[i] == Token::STATE_TOKEN && (tokens[i - 1] == Token::COMMA_TOKEN || tokens[i - 1] == Token::CBL_TOKEN))
             {
                 i++;
             }
             else
             {
+
                 return false;
             }
         }
+  
         if (tokens[i] != Token::CBR_TOKEN)
         {
             return false;
@@ -160,13 +163,14 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
         {
             return false;
         }
+        i++;
         while (tokens[i] != Token::CBR_TOKEN)
         {
             if (tokens[i] == Token::COMMA_TOKEN && tokens[i + 1] == Token::INPUT_SYMBOL_TOKEN)
             {
                 i++;
             }
-            else if (tokens[i] == Token::INPUT_SYMBOL_TOKEN && tokens[i - 1] == Token::COMMA_TOKEN)
+            else if (tokens[i] == Token::INPUT_SYMBOL_TOKEN && (tokens[i - 1] == Token::COMMA_TOKEN || tokens[i - 1] == Token::CBL_TOKEN))
             {
                 i++;
             }
@@ -180,59 +184,43 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
             return false;
         }
         i++;
-        std::cout << "TESTING TILL HERE COMPLETE" << std::endl;
+       
         // for matching transition set
         if (tokens[i] != Token::CBL_TOKEN)
         {
             return false;
         }
-        for (int k = 0; k < TRANSITION_DEF_GRAMMAR.size(); k++)
+        i++;    
+        for (int j = 0; j < TRANSITION_UNIT_DEF_GRAMMAR.size(); j++)
         {
-
-            if (tokens[i] == Token::TRANSITION_PUMPING_TOKEN)
+           
+            if (j == TRANSITION_UNIT_DEF_GRAMMAR.size() - 1)
             {
-                int j = 0;
-                int store = 0;
-                for (int m = i; m < tokens.size(); m++)
-                {
-                    if (tokens[m] == TRANSITION_UNIT_DEF_GRAMMAR[j])
-                    {
-                        j++;
-                        store = m;
-                    }
-                    if (TRANSITION_UNIT_DEF_GRAMMAR[j] == Token::CPR_TOKEN)
-                    {
-                        j = 0;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                i++;
+                if (tokens[i + 1] == Token::CBR_TOKEN)
+                    break;
+                j = 0;
+                i += 2;
             }
-
-            else if (tokens[i] != TRANSITION_DEF_GRAMMAR[k])
+            if (tokens[i] != TRANSITION_UNIT_DEF_GRAMMAR[j])
             {
+              
                 return false;
-            }
-            if (tokens[i] == Token::CPR_TOKEN)
-            {
-                break;
             }
             i++;
         }
-        i++;
+        i+=2;
         // remaining 3 entities
-
-        if (tokens[i] == Token::CPL_TOKEN && tokens[i + 1] == Token::STATE_TOKEN && tokens[i + 2] == Token::CPR_TOKEN)
+       
+        if (tokens[i] == Token::CPL_TOKEN && tokens[i + 1] == Token::INITIAL_STATE_TOKEN && tokens[i + 2] == Token::CPR_TOKEN)
         {
             i += 3;
         }
         else
         {
+            
             return false;
         }
+       
         if (tokens[i] == Token::CPL_TOKEN && tokens[i + 1] == Token::BLANK_SYMBOL_TOKEN && tokens[i + 2] == Token::CPR_TOKEN)
         {
             i += 3;
@@ -241,15 +229,23 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
         {
             return false;
         }
-        if (tokens[i] == Token::CPL_TOKEN && tokens[i + 1] == Token::STATE_TOKEN && tokens[i + 2] == Token::CPR_TOKEN)
+        i++; 
+        while(tokens[i]!= Token::CPR_TOKEN)
         {
-            i += 3;
+            if (tokens[i] == Token::COMMA_TOKEN && tokens[i + 1] == Token::FINAL_STATE_TOKEN)
+            {
+                i++;
+            }
+            else if (tokens[i] == Token::FINAL_STATE_TOKEN && (tokens[i - 1] == Token::COMMA_TOKEN || tokens[i - 1] == Token::CPL_TOKEN))
+            {
+                i++;
+            }
+            else
+            {
+                return false;
+            }
         }
-        else
-        {
-            return false;
-        }
-
+        
         if (tokens[i] == Token::CPR_TOKEN)
         {
             return true;
@@ -261,20 +257,7 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
     }
     else if (GT == Grammar_Type::IGNORE_UNKNOWNS_DEF_GRAMMAR)
     {
-        int h = 0;
-        for (int i = 0; i < tokens.size(); i++)
-        {
-            if (tokens[i] == IGNORE_UNKNOWNS_DEF_GRAMMAR[h])
-
-            {
-                h++;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        if (tokens[h] == Token::CPR_TOKEN && h == tokens.size() - 1)
+        if(tokens[0] == Token::IGNORE_UNKNOWNS_TOKEN && tokens[1] == Token::COLON_TOKEN && tokens[2] == Token::CPL_TOKEN  && tokens[3] == Token::DECISION_TOKEN && tokens[4] == Token::CPR_TOKEN)
         {
             return true;
         }
@@ -282,61 +265,68 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
         {
             return false;
         }
+
     }
     else if (GT == Grammar_Type::RELAY_DEF_GRAMMAR)
     {
-
-        for (int j = 0; j < RELAY_DEF_GRAMMAR.size(); j++)
+        int j = 0 ; 
+        if(tokens[0] == Token::RELAY_TOKEN && tokens[1] == Token::COLON_TOKEN && tokens[2] == Token::CBL_TOKEN  && tokens[3] == Token::ON_ACCEPT_TOKEN && tokens[4] == Token::COLON_TOKEN && tokens[5] == Token::CPL_TOKEN)
         {
-
-            if (RELAY_DEF_GRAMMAR[j] == Token::RELAY_ACCEPT_PUMPING_TOKEN)
+            j = 6;
+            while(tokens[j]!= Token::CPR_TOKEN)
             {
-
-                while (tokens[j] != Token::CPR_TOKEN)
+                if (tokens[j] == Token::COMMA_TOKEN && (tokens[j + 1] == Token::CONSOLE_TOKEN || tokens[j+1] == Token::EXTERNAL_TURING_MACHINE_NAME_TOKEN || tokens[j+1] == Token::NULL_TOKEN) )
                 {
-                    if (tokens[j] == Token::EXTERNAL_TURING_MACHINE_NAME_TOKEN || tokens[j] == Token::CONSOLE_TOKEN || tokens[j] == Token::NULL_TOKEN)
-                    {
-                        j++;
-                    }
-                    else if (tokens[j] == Token::COMMA_TOKEN && (tokens[j - 1] == Token::EXTERNAL_TURING_MACHINE_NAME_TOKEN || tokens[j - 1] == Token::NULL_TOKEN))
-                    {
-                        j++;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    j++;
                 }
-                j++;
-                if (tokens[j] == Token::ON_REJECT_TOKEN && tokens[j + 1] == Token::COLON_TOKEN && tokens[j + 2] == Token::CPL_TOKEN)
+                else if ((tokens[j] == Token::EXTERNAL_TURING_MACHINE_NAME_TOKEN || tokens[j] == Token::CONSOLE_TOKEN || tokens[j] == Token::NULL_TOKEN) && (tokens[j-1] == Token::COMMA_TOKEN || tokens[j-1] == Token::CPL_TOKEN))
                 {
-                    j += 3;
-                    while (tokens[j] != Token::CPR_TOKEN)
-                    {
-                        if (tokens[j] == Token::EXTERNAL_TURING_MACHINE_NAME_TOKEN || tokens[j] == Token::CONSOLE_TOKEN || tokens[j] == Token::NULL_TOKEN)
-                        {
-                            j++;
-                        }
-                        else if (tokens[j] == Token::COMMA_TOKEN && (tokens[j - 1] == Token::EXTERNAL_TURING_MACHINE_NAME_TOKEN || tokens[j - 1] == Token::NULL_TOKEN))
-                        {
-                            j++;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
+                    j++;
+                }
+                else
+                {
+                    return false;
                 }
             }
-            else if (tokens[j] == RELAY_DEF_GRAMMAR[j])
+            j++;
+            if(tokens[j]== Token::ON_REJECT_TOKEN && tokens[j+1]== Token::COLON_TOKEN && tokens[j+2]== Token::CPL_TOKEN)
             {
-                continue;
+               j+=3;
+               while(tokens[j]!= Token::CPR_TOKEN)
+               {
+                   if (tokens[j] == Token::COMMA_TOKEN && (tokens[j + 1] == Token::CONSOLE_TOKEN || tokens[j+1] == Token::EXTERNAL_TURING_MACHINE_NAME_TOKEN || tokens[j+1] == Token::NULL_TOKEN) )
+                   {
+                       j++;
+                   }
+                   else if ((tokens[j] == Token::EXTERNAL_TURING_MACHINE_NAME_TOKEN || tokens[j] == Token::CONSOLE_TOKEN || tokens[j] == Token::NULL_TOKEN) &&  (tokens[j-1] == Token::COMMA_TOKEN || tokens[j-1] == Token::CPL_TOKEN))
+                   {
+                       j++;
+                   }
+                   else
+                   {
+                       return false;
+                   }
+               }
+               if(tokens[j+1]== Token::CBR_TOKEN)
+               {
+                   return true;
+               }
+               else
+               {
+                   return false;
+               }
             }
-            else
+            else 
             {
-                return false;
+                 return false;
             }
         }
+        else
+        {
+            return false;
+        }
+        
+       
     }
     else
     {
