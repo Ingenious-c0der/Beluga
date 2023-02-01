@@ -18,8 +18,8 @@ machine (beluga) => {
          ) /* tuple of 6 entities  */
     ignoreUnknowns : (accept) /* ignore unknown tape symbols, basic booleans are accept (true) and reject (false) */ 
     relay : {
-        onAccept: (console,TM_3) /* available relays are console, null,turing Machine(pipelined) */
-        onReject: (console,TM_4) /* available relays are console, null,turing Machine (pipelined) */
+        onAccept: (console) /* available relays are console, null,turing Machine(pipelined) */
+        onReject: (console) /* available relays are console, null,turing Machine (pipelined) */
     }
 }
 

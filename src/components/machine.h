@@ -5,9 +5,10 @@
 class Machine;
 class Consumes
 {
-    std::vector<Machine> consumed_machines;
+
 
 public:
+    std::vector<Machine> consumed_machines;
     Consumes();
     Consumes(std::vector<Machine>);
     friend class Machine; 

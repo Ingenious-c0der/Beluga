@@ -356,6 +356,7 @@ std::vector<LEXER_Element> sanitizer_secondary(std::vector<LEXER_Element> partia
 
     return partial_unknown_tokens;
 }
+
 std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
 {
     auto condensed_tokens = condensor(tokens);
@@ -363,7 +364,7 @@ std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
     auto san_sec = sanitizer_secondary(san_pri);
     // enough verification confidence is achieved with secondary sanitizer and now
     // the machines can be actually built and returned
-    std::cout << "Nominal" << std::endl;
+
     std::vector<Machine> GENERATED_machines;
     for (int i = 0; i < san_sec.size(); i++)
     {
@@ -504,22 +505,9 @@ std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
                 }
                 i++;
             }
-            std::cout<< temp_machine.name << std::endl;
             GENERATED_machines.push_back(temp_machine);
         }
     }
-    std::cout<< GENERATED_machines.size() << std::endl;
     return GENERATED_machines;
 }
 
-// testing
-int main()
-{
-    auto x = lex("../examples/second.beluga");
-
-    auto mac = parse(x); // returns a vector of Machine Objects
-    for(auto m : mac)
-    {
-       m.to_string() ; 
-    }
-}
