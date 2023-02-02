@@ -1,16 +1,141 @@
 #include <vector>
 #include "parser.cpp"
+#include <algorithm>
+// -. check if machine names are unique
+// 1. find if any tm's forward reference is not present
+// 2. Resolve topological ordering using relay and cosumes
+// 3. check if tape names in each machine are unique and valid
+// 4. check if state names in each machine are unique and valid
+// 5 . check ignore unknowns for symbol sensitivity
+// 6. If everything is valid, execute the machines in topological order
 
+class Resolution_Pair
+{
+public:
+    Machine before;
+    Machine after;
+    int marked = 0;
+    Resolution_Pair()
+    {
+        this->before = Machine();
+        this->after = Machine();
+    }
+    Resolution_Pair(Machine before, Machine after)
+    {
+        this->before = before;
+        this->after = after;
+    }
+};
 
+class RP_CONTAINER
+{
+public:
+    std::vector<Resolution_Pair> pairs;
+    RP_CONTAINER()
+    {
+        this->pairs = {};
+    }
+    RP_CONTAINER(std::vector<Resolution_Pair> pairs)
+    {
+        this->pairs = pairs;
+    }
+    void add_pair(Resolution_Pair pair)
+    {
+        this->pairs.push_back(pair);
+    }
 
-    // -. check if machine names are unique
-    // 1. find if any tm's forward reference is not present
-    // 2. Resolve topological ordering using relay and cosumes
-    // 3. check if tape names in each machine are unique and valid
-    // 4. check if state names in each machine are unique and valid
-    // 5 . check ignore unknowns for symbol sensitivity
-    // 6. If everything is valid, execute the machines in topological order
+    bool search_after(Machine m)
+    {
+        for (auto pair : this->pairs)
+        {
+            if (pair.after.name == m.name)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    bool search_before(Machine m)
+    {
+        for (auto pair : this->pairs)
+        {
+            if (pair.before.name == m.name)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    std::vector<Machine> get_afters()
+    {
+        std::vector<Machine> afters;
+        for (auto pair : this->pairs)
+        {
+            afters.push_back(pair.after);
+        }
+        return afters;
+    }
+    std::vector<Machine> get_befores()
+    {
+        std::vector<Machine> befores;
+        for (auto pair : this->pairs)
+        {
+            befores.push_back(pair.before);
+        }
+        return befores;
+    }
+
+    void remove_pair_where_after_name(std::string name)
+    {
+        //220 iq or -220 iq ?  removing while iterating in for loop was the biggest PITA
+        int counter = 0;
+        int active_pair_size = this->pairs.size();
+        while (true)
+        {
+            if (counter == active_pair_size)
+            {
+                break;
+            }
+            if (this->pairs[counter].after.name == name)
+            {
+                this->pairs.erase(this->pairs.begin() + counter);
+                active_pair_size = this->pairs.size();
+                counter = 0;
+                continue;
+            }
+            counter++;
+        }
+    }
+    void remove_pair_where_before_name(std::string name)
+    {
+        int counter = 0;
+        int active_pair_size = this->pairs.size();
+        while (true)
+        {
+            if (counter == active_pair_size)
+            {
+                break;
+            }
+            if (this->pairs[counter].before.name == name)
+            {
+                this->pairs.erase(this->pairs.begin() + counter);
+                active_pair_size = this->pairs.size();
+                counter = 0;
+                continue;
+            }
+            counter++;
+        }
+    }
+
+    void print_pairs()
+    {
+        for (auto pair : this->pairs)
+        {
+            std::cout << pair.before.name << " -> " << pair.after.name << std::endl;
+        }
+    }
+};
 
 void machine_unique_name_check(std::vector<Machine> machines)
 {
@@ -38,7 +163,6 @@ void machine_unique_name_check(std::vector<Machine> machines)
         std::cerr << e.what() << '\n';
         exit(1);
     }
-
 }
 
 std::vector<Tape> combine_tapes(std::vector<Tape> tapes_1, std::vector<Tape> tapes_2)
@@ -54,11 +178,24 @@ std::vector<Tape> combine_tapes(std::vector<Tape> tapes_1, std::vector<Tape> tap
 bool in_state_set(Machine m, State s)
 {
 
-    return true; 
+    return true;
 }
 
 bool in_tape_set(Machine m, Tape t)
 {
+    return true;
+}
+
+bool not_in(int n, std::vector<int> nums)
+
+{
+    for (auto num : nums)
+    {
+        if (num == n)
+        {
+            return false;
+        }
+    }
     return true;
 }
 
@@ -100,22 +237,20 @@ bool machine_exists_and_consumes(Machine consumer, Machine relays, std::vector<M
     }
     std::cout << "Machine " << consumer.name << " does not exist" << std::endl;
     exit(1);
-    return false; 
+    return false;
 }
 
 std::vector<Machine> topo_sort(std::vector<Machine> machines)
 {
     std::vector<Machine> sorted_machines;
-    std::vector<Machine> BEFORE;
-    std::vector<Machine> AFTER;
+    RP_CONTAINER container;
     for (int i = 0; i < machines.size(); i++)
     {
         for (auto ext_mac : machines[i].relay.to_relay_machine_on_accept)
         {
             if (machine_exists_and_consumes(ext_mac, machines[i], machines))
             {
-                BEFORE.push_back(machines[i]);
-                AFTER.push_back(ext_mac);
+                container.add_pair(Resolution_Pair(machines[i], ext_mac));
                 ext_mac.tapes = combine_tapes(ext_mac.tapes, machines[i].tapes);
             }
         }
@@ -123,55 +258,67 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
         {
             if (machine_exists_and_consumes(ext_mac, machines[i], machines))
             {
-                BEFORE.push_back(machines[i]);
-                AFTER.push_back(ext_mac);
+                container.add_pair(Resolution_Pair(machines[i], ext_mac));
                 ext_mac.tapes = combine_tapes(ext_mac.tapes, machines[i].tapes);
             }
         }
     }
     bool sorted = false;
-    int initial_size = BEFORE.size();
-    std::vector<bool> mark = std::vector<bool>(BEFORE.size(), false);
+    std::vector<Machine> GROSSLY_DEPENDENT_MACHINES;
+    std::vector<Machine> BEFORE = container.get_befores();
+    std::vector<Machine> AFTER = container.get_afters();
+    for (int i = 0; i < AFTER.size(); i++)
+    {
+        if (not_in(AFTER[i], BEFORE, GROSSLY_DEPENDENT_MACHINES))
+        {
+            GROSSLY_DEPENDENT_MACHINES.push_back(AFTER[i]);
+        }
+    }
+    int initial_size = machines.size() - GROSSLY_DEPENDENT_MACHINES.size();
+    std::cout << "Topological sorting" << std::endl;
+
+    std::vector<std::string> buffer_name_machines;
     while (!sorted)
     {
+        for (int i = 0; i < container.pairs.size(); i++)
+        {
 
-        for (int i = 0; i < BEFORE.size(); i++)
-        {   
-            //mark phase 
-            if (not_in(BEFORE[i], AFTER , sorted_machines))
+            if (not_in(container.pairs[i].before, container.get_afters(), sorted_machines))
             {
-                sorted_machines.push_back(BEFORE[i]);
-                mark[i] = true;
+                sorted_machines.push_back(container.pairs[i].before);
+                buffer_name_machines.push_back(container.pairs[i].before.name);
             }
         }
-        if(sorted_machines.size() == 0)
+
+        if (sorted_machines.size() == 0 || buffer_name_machines.size() == 0)
         {
-            if(initial_size == 0)
+            if (initial_size == 0)
             {
-                break  ;
+                break;
             }
-            std::cout<< "Error: Cyclic dependency detected" << std::endl;
+            std::cout << "Error: Cyclic dependency detected" << std::endl;
             exit(1);
         }
-        else if(sorted_machines.size() == initial_size)
+        else if (sorted_machines.size() == initial_size)
         {
             sorted = true;
         }
         else
         {
-            //sweep phase
-            for (int i = 0; i < mark.size(); i++)
+            // sweep marked names
+            for (int i = 0; i < buffer_name_machines.size(); i++)
             {
-                if(mark[i])
-                {
-                    BEFORE.erase(BEFORE.begin() + i);
-                    AFTER.erase(AFTER.begin() + i);
-                    mark.erase(mark.begin() + i);
-                }
+                container.remove_pair_where_before_name(buffer_name_machines[i]);
             }
+            buffer_name_machines.clear();
         }
     }
-    //cout sorted machine sequence
+    // combine grossly dependent machines
+    for (auto mac : GROSSLY_DEPENDENT_MACHINES)
+    {
+        sorted_machines.push_back(mac);
+    }
+    // cout sorted machine sequence
     for (auto mac : sorted_machines)
     {
         std::cout << mac.name << std::endl;
@@ -181,9 +328,11 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
 
 void execute(std::string filename)
 {
-
     auto x = lex(filename);
     std::vector<Machine> machines = parse(x);
     machine_unique_name_check(machines);
     machines = topo_sort(machines);
+    for(auto machine : machines){
+        machine.run();
+    }
 }

@@ -16,6 +16,7 @@ class Transition{
     Tape currentTape;
     public: 
     Transition(State,Symbol,State,Symbol,Symbol,Tape,Tape);
+    //transit() function 
     friend class Machine ;
 
 };  
@@ -30,5 +31,15 @@ Transition:: Transition(State currentState,Symbol input_symbol,State nextState,S
     this->currentTape = currentTape;
     this->nextTape = nextTape;
 }
+
+//can be used later in run of machine for each transition rather than inplace handling 
+// class Transit_feedback
+// {
+    
+//     public:
+//     State switchToState; 
+
+// };
+
 
 #endif

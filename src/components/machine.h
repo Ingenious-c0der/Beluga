@@ -65,12 +65,17 @@ public:
     std::vector<State> final_states;
     bool ignore_unknowns = false;
     bool is_forward_reference = true;
+    bool run(); 
     std::string name;
     void to_string();
+    Machine();
     Machine(std::string);
     Machine(Consumes, Relay, State, Symbol, std::vector<Tape>, std::vector<Transition>, std::vector<State>, std::vector<Symbol>, std::vector<State>, bool, bool);
 };
+Machine::Machine()
+{
 
+}
 Machine::Machine(std::string name)
 {
     this->name = name;
@@ -139,5 +144,14 @@ void Machine::to_string()
         std::cout << state.name << std::endl;
     }
 }
+bool Machine::run()
+{
+    //1. solve tape forward references while executing 
+    //2. solve state forward references while executing
+    //3. solve symbol forward references while executing
+    
 
+
+
+}
 #endif

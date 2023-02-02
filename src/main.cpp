@@ -3,6 +3,7 @@
 
 int main()
 {
-    execute("../examples/third.beluga");
+    //handle file related errors
+    execute("../examples/complex_topo.beluga");
     return 0;
 }

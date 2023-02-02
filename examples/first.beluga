@@ -14,7 +14,7 @@ machine (beluga) => {
             } /* finite set of transitions */
             (q0) /* initial state  */
             (^) /* blank symbol  */
-            (q1,q2,q3) /* final states */
+            (q1) /* final states */
          ) /* tuple of 6 entities  */
     ignoreUnknowns : (accept) /* ignore unknown tape symbols, basic booleans are accept (true) and reject (false) */ 
     relay : {
