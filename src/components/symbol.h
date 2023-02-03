@@ -13,6 +13,7 @@ public:
     Symbol(); // default constructor
     Symbol(std::string, Subtype);
     friend class Machine ;
+    friend class Transition;
 };
 
 Symbol::Symbol()

@@ -11,6 +11,7 @@ class Tape
     std::string current;
     bool is_reference = false; 
     friend class Machine ;
+    friend class Transition; 
 
 public:
     Tape(); // default constructor

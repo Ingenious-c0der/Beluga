@@ -17,6 +17,17 @@ class Transition{
     public: 
     Transition(State,Symbol,State,Symbol,Symbol,Tape,Tape);
     //transit() function 
+    bool does_match(State St,Symbol s ,Tape t)
+    {
+        if(this->currentState.name == St.name && this->input_symbol.name == s.name && this->currentTape.name == t.name)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     friend class Machine ;
 
 };  

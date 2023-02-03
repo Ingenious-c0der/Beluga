@@ -51,6 +51,33 @@ Relay::Relay(std::vector<Machine> to_relay_machine_on_accept, std::vector<Machin
     this->to_relay_machine_on_reject = to_relay_machine_on_reject;
 }
 
+
+class TRANSITION_PAIR{
+    Tape t ; 
+    Symbol s ;
+    State st ;
+   Symbol dir ;
+    public:
+    TRANSITION_PAIR(Tape,Symbol,State,Symbol);
+    TRANSITION_PAIR(State,Symbol);
+    friend class Machine;
+
+}; 
+
+TRANSITION_PAIR::TRANSITION_PAIR(Tape t,Symbol s,State st,Symbol dir)
+{
+    this->t = t;
+    this->s = s;
+    this->st = st;
+    this->dir = dir;
+}
+
+TRANSITION_PAIR::TRANSITION_PAIR(State st,Symbol s)
+{
+    this->st = st;
+    this->s = s;
+}
+
 class Machine
 {
 public:
@@ -66,6 +93,9 @@ public:
     bool ignore_unknowns = false;
     bool is_forward_reference = true;
     bool run(); 
+    Symbol getSymbol(std::string);
+    State getState(std::string); 
+    Tape getTape(std::string );
     std::string name;
     void to_string();
     Machine();
@@ -144,12 +174,122 @@ void Machine::to_string()
         std::cout << state.name << std::endl;
     }
 }
+
+State Machine::getState(std::string stateName)
+{
+    for (auto state : states)
+    {
+        if (state.name == stateName)
+        {
+            return state;
+        }
+    }
+    return State();
+}
+
+Tape Machine::getTape(std::string tapeName)
+{
+    for (auto tape : tapes)
+    {
+        if (tape.name == tapeName)
+        {
+            return tape;
+        }
+    }
+        std::cout<< "Undefined Tape found in Transition : "<< tapeName << std::endl;	
+    exit(1);
+    return Tape();
+}
+Symbol Machine::getSymbol(std::string symbolName)
+{
+    for (auto symbol : symbols)
+    {
+        if (symbol.name == symbolName)
+        {
+            return symbol;
+        }
+    }
+    //cout error message
+    std::cout<< "Undefined Symbol found in Transition : "<< symbolName << std::endl;	
+    exit(1);
+    
+    return Symbol();
+}
+
+
 bool Machine::run()
 {
     //1. solve tape forward references while executing 
     //2. solve state forward references while executing
     //3. solve symbol forward references while executing
+    //4. Run the turing machine based on transition sequence matching 
+    State currentState = this->initial_state;
+    Tape currentTape = this->tapes[0]; //the first tape used will always be the first tape in the vector
     
+    bool completed = false; 
+    bool matched = false;
+    bool rejected = false; 
+    while(!completed)
+    {
+        for(int i  = 0 ; i < transitions.size() ; i++)
+        {
+
+            if(transitions[i].does_match(currentState, getSymbol(currentTape.get_current()), currentTape ))
+            {
+                matched = true;
+                currentTape.update_current(transitions[i].output_symbol.name);
+                currentState = transitions[i].nextState;
+                if(getState(currentState.name).isFinal)
+                {
+                    completed = true;
+                    
+                }
+                if(transitions[i].Direction.subtype == Subtype::DIRECTION_RIGHT)
+                {
+                    currentTape.move_right();
+                }
+                else if(transitions[i].Direction.subtype == Subtype::DIRECTION_LEFT)
+                {
+                    currentTape.move_left();
+                }
+                else {
+                    //do nothing 
+                }
+                currentTape = getTape(transitions[i].nextTape.name); 
+
+            }
+
+        }
+        if(!matched)
+        {
+            std::cout<< name <<" : No transition found for current state ("<< currentState.name<<") and symbol ("<<currentTape.get_current()<<") ,exiting" << std::endl;
+            rejected = true; 
+            completed = true;
+        }
+
+    }
+    if(rejected)
+    {
+        if(relay.relay_to_console_on_reject)
+        {
+            std::cout<< name << " (Reject) : "<<std::endl; 
+            for(int i = 0 ; i < tapes.size() ; i++)
+            {
+                std::cout<< tapes[i].name << " : "<< tapes[i].tape_contents << std::endl;
+            }
+        }
+    }
+    else{
+        if(relay.relay_to_console_on_accept)
+        {
+            std::cout<< name << " (Accept) : "<<std::endl; 
+            for(int i = 0 ; i < tapes.size() ; i++)
+            {
+                std::cout<< tapes[i].name << " : "<< tapes[i].tape_contents << std::endl;
+            }
+        }
+    }
+
 
 
 

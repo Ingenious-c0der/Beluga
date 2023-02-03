@@ -13,6 +13,8 @@ public:
     State();
     State(std::string, bool);
     friend class Machine ;
+    friend class Transition;
+    
 
 };
 State::State()
