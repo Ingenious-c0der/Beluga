@@ -8,6 +8,7 @@ turing machine(with finite tape).
 
 ## [How to run on windows](https://github.com/Ingenious-c0der/Beluga/blob/master/README.md#installation) ?  
 
+### [Read the docs](https://github.com/Ingenious-c0der/Beluga/blob/master/documentation.md#welcome-to-beluga-docs)
 You now have the power to directly write and run turing machines!
 
 ### Sample Beluga Code (According to current design decisions)
