@@ -2,7 +2,7 @@
 ![logo](https://user-images.githubusercontent.com/76046349/215174192-1318ff0d-f4c1-466f-8896-a5893899429a.png)
 
 
-Beluga Language is an esoteric language based on fundamental implementations of a turing machine. 
+Beluga Language is an esoteric programming language based on fundamental implementations of a turing machine. 
 As of now, its in active development (Just Started Out!), and mimics the model of a Linear Bounded Automata and sooner that of a general 
 turing machine(with finite tape). 
 
