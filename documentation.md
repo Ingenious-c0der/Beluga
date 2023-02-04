@@ -1,6 +1,8 @@
 # Welcome to Beluga Docs!
 
-#### Different language features and how-to's are explained in this document.
+![image](https://user-images.githubusercontent.com/76046349/216764405-f1192bd6-1410-409f-9538-520808d92672.png)
+
+### Different language features and how-to's are explained in this document.
 
 ## What is the goal of Beluga?
 
