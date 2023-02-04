@@ -73,7 +73,8 @@ A single transition construct is standard row from a transition table defining :
  {
     (CurrentState,ReadSymbol,NextState,WriteSymbol,Direction,CurrentTape,NextTape),
     ..,
-    (CurrentState,ReadSymbol,NextState,WriteSymbol,Direction,CurrentTape,NextTape)}
+    (CurrentState,ReadSymbol,NextState,WriteSymbol,Direction,CurrentTape,NextTape)
+}
 ```
 
 ### IgnoreUnknowns Construct : 
