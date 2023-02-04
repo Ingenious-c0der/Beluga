@@ -1,0 +1,27 @@
+machine (OnesComplement) => {
+    consumes : (null) 
+    tape : ({t0,10000011111110B},{t1,1110011110000B})
+    def: (
+            {q0,complete} /* finite set of states */
+            {1,0} /* finite set of input symbols */
+            {
+                (q0,1,q0,0,->,t0,t0),
+                (q0,0,q0,1,->,t0,t0),
+                (q0,B,q0,B,->,t0,t1),
+                (q0,1,q0,0,->,t1,t1),
+                (q0,0,q0,1,->,t1,t1),
+                (q0,B,complete,B,->,t1,t0)
+                
+            } /* finite set of transitions */
+            (q0) /* initial state  */
+            (B) /* blank symbol  */
+            (complete) /* final states */
+         ) /* tuple of 6 entities  */
+    ignoreUnknowns : (reject) /* ignore unknown tape symbols, basic booleans are accept (true) and reject (false) */ 
+    relay : {
+        onAccept: (console) /* available relays are console, null,turing Machine(pipelined) */
+        onReject: (console) /* available relays are console, null,turing Machine (pipelined) */
+    }
+}
+
+

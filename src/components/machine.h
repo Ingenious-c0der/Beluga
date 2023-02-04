@@ -93,7 +93,7 @@ public:
     Symbol getSymbol(std::string);
     State getState(std::string);
     int getTape(std::string);
-    bool in(std::string, std::vector<State> ); 
+    bool in(std::string, std::vector<State>);
     std::string name;
     void to_string();
     Machine();
@@ -186,9 +186,9 @@ State Machine::getState(std::string stateName)
 
 int Machine::getTape(std::string tapeName)
 {
-    for(int i = 0; i < tapes.size(); i++)
+    for (int i = 0; i < tapes.size(); i++)
     {
-        if(tapes[i].name == tapeName)
+        if (tapes[i].name == tapeName)
         {
             return i;
         }
@@ -206,7 +206,7 @@ Symbol Machine::getSymbol(std::string symbolName)
             return symbol;
         }
     }
-    if(symbolName == blank_symbol.name)
+    if (symbolName == blank_symbol.name)
     {
         return blank_symbol;
     }
@@ -229,7 +229,6 @@ bool Machine::in(std::string stateName, std::vector<State> states)
     return false;
 }
 
-
 bool Machine::run()
 {
     // 1. solve tape forward references while executing
@@ -239,9 +238,9 @@ bool Machine::run()
     State currentState = this->initial_state;
     int current_tape_index = 0;
 
-    for(int i = 0 ; i  <states.size() ;i++)
+    for (int i = 0; i < states.size(); i++)
     {
-        if(in(states[i].name,final_states))
+        if (in(states[i].name, final_states))
         {
             states[i].isFinal = true;
         }
@@ -254,7 +253,7 @@ bool Machine::run()
         for (int i = 0; i < transitions.size(); i++)
         {
 
-             if (transitions[i].does_match(currentState, getSymbol(tapes[current_tape_index].get_current()), tapes[current_tape_index]))
+            if (transitions[i].does_match(currentState, getSymbol(tapes[current_tape_index].get_current()), tapes[current_tape_index]))
             {
                 matched = true;
                 if (ignore_unknowns)
@@ -266,6 +265,7 @@ bool Machine::run()
                     Symbol s = getSymbol(transitions[i].output_symbol.name); // added symbol existence check
                     tapes[current_tape_index].update_current(s.name);
                 }
+                //std::cout << name << " : Transition found for current state (" << currentState.name << ") and symbol (" << tapes[current_tape_index].get_current() << ") : " << transitions[i].currentState.name << " " << transitions[i].nextState.name << " " << transitions[i].input_symbol.name << " " << transitions[i].output_symbol.name << " " << transitions[i].Direction.name << std::endl;
 
                 currentState = transitions[i].nextState;
                 if (getState(currentState.name).isFinal)
@@ -274,21 +274,16 @@ bool Machine::run()
                 }
                 if (transitions[i].Direction.subtype == Subtype::TRANSITION_DIRECTION_SYMBOL)
                 {
-                    if(transitions[i].Direction.name == "->")
+                    if (transitions[i].Direction.name == "->")
                     {
                         tapes[current_tape_index].move_right();
                     }
-                    else if(transitions[i].Direction.name == "<-")
+                    else if (transitions[i].Direction.name == "<-")
                     {
                         tapes[current_tape_index].move_left();
                     }
                 }
-                else
-                {
-                    // do nothing
-                }
                 current_tape_index = getTape(transitions[i].nextTape.name);
-
             }
         }
         if (!matched)
