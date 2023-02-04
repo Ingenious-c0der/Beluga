@@ -1,3 +1,4 @@
+/* sample file , do not run */
 machine (beluga) => {
     consumes : (null) 
     tape : ({t0,abbb^bab^bab},{t1,abbb^bbedr^})
