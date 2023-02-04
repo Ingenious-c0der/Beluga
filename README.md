@@ -90,3 +90,6 @@ The language uses C++ for compilation, so you need a C++ compiler to compile bel
 for example - C:/Users/username/Desktop/Beluga/src
 #### 5. You are good to go!
 Run the file as Beluga <filename.beluga>
+
+![image](https://user-images.githubusercontent.com/76046349/216761110-0dfd9be5-f993-4a61-89e5-601086684d6d.png)
+
