@@ -1,17 +1,16 @@
 #ifndef MACHINE_H
 #define MACHINE_H
 #include "export.h"
-#include<vector>
+#include <vector>
 class Machine;
 class Consumes
 {
-
 
 public:
     std::vector<Machine> consumed_machines;
     Consumes();
     Consumes(std::vector<Machine>);
-    friend class Machine; 
+    friend class Machine;
 };
 
 Consumes::Consumes()
@@ -26,17 +25,15 @@ Consumes::Consumes(std::vector<Machine> consumed_machines)
 
 class Relay
 {
-   
-
 
 public:
     Relay();
     Relay(std::vector<Machine>, std::vector<Machine>);
     bool relay_to_console_on_accept = false;
     bool relay_to_console_on_reject = false;
-     std::vector<Machine> to_relay_machine_on_accept;
+    std::vector<Machine> to_relay_machine_on_accept;
     std::vector<Machine> to_relay_machine_on_reject;
-    friend class Machine ;
+    friend class Machine;
 };
 
 Relay::Relay()
@@ -51,20 +48,20 @@ Relay::Relay(std::vector<Machine> to_relay_machine_on_accept, std::vector<Machin
     this->to_relay_machine_on_reject = to_relay_machine_on_reject;
 }
 
+class TRANSITION_PAIR
+{
+    Tape t;
+    Symbol s;
+    State st;
+    Symbol dir;
 
-class TRANSITION_PAIR{
-    Tape t ; 
-    Symbol s ;
-    State st ;
-   Symbol dir ;
-    public:
-    TRANSITION_PAIR(Tape,Symbol,State,Symbol);
-    TRANSITION_PAIR(State,Symbol);
+public:
+    TRANSITION_PAIR(Tape, Symbol, State, Symbol);
+    TRANSITION_PAIR(State, Symbol);
     friend class Machine;
+};
 
-}; 
-
-TRANSITION_PAIR::TRANSITION_PAIR(Tape t,Symbol s,State st,Symbol dir)
+TRANSITION_PAIR::TRANSITION_PAIR(Tape t, Symbol s, State st, Symbol dir)
 {
     this->t = t;
     this->s = s;
@@ -72,7 +69,7 @@ TRANSITION_PAIR::TRANSITION_PAIR(Tape t,Symbol s,State st,Symbol dir)
     this->dir = dir;
 }
 
-TRANSITION_PAIR::TRANSITION_PAIR(State st,Symbol s)
+TRANSITION_PAIR::TRANSITION_PAIR(State st, Symbol s)
 {
     this->st = st;
     this->s = s;
@@ -84,7 +81,7 @@ public:
     Consumes consumes;
     Relay relay;
     State initial_state;
-    Symbol blank_symbol; 
+    Symbol blank_symbol;
     std::vector<Tape> tapes;
     std::vector<Transition> transitions;
     std::vector<State> states;
@@ -92,10 +89,11 @@ public:
     std::vector<State> final_states;
     bool ignore_unknowns = false;
     bool is_forward_reference = true;
-    bool run(); 
+    bool run();
     Symbol getSymbol(std::string);
-    State getState(std::string); 
-    Tape getTape(std::string );
+    State getState(std::string);
+    int getTape(std::string);
+    bool in(std::string, std::vector<State> ); 
     std::string name;
     void to_string();
     Machine();
@@ -104,7 +102,6 @@ public:
 };
 Machine::Machine()
 {
-
 }
 Machine::Machine(std::string name)
 {
@@ -156,7 +153,7 @@ void Machine::to_string()
     std::cout << "Transitions: " << std::endl;
     for (auto transition : this->transitions)
     {
-        std::cout << transition.currentState.name << " " << transition.nextState.name << " " << transition.input_symbol.name << " " << transition.output_symbol.name<<" " << transition.Direction.name << std::endl;
+        std::cout << transition.currentState.name << " " << transition.nextState.name << " " << transition.input_symbol.name << " " << transition.output_symbol.name << " " << transition.Direction.name << std::endl;
     }
     std::cout << "States: " << std::endl;
     for (auto state : this->states)
@@ -187,18 +184,18 @@ State Machine::getState(std::string stateName)
     return State();
 }
 
-Tape Machine::getTape(std::string tapeName)
+int Machine::getTape(std::string tapeName)
 {
-    for (auto tape : tapes)
+    for(int i = 0; i < tapes.size(); i++)
     {
-        if (tape.name == tapeName)
+        if(tapes[i].name == tapeName)
         {
-            return tape;
+            return i;
         }
     }
-        std::cout<< "Undefined Tape found in Transition : "<< tapeName << std::endl;	
+    std::cout << "Undefined Tape found in Transition : " << tapeName << std::endl;
     exit(1);
-    return Tape();
+    return -1;
 }
 Symbol Machine::getSymbol(std::string symbolName)
 {
@@ -209,89 +206,121 @@ Symbol Machine::getSymbol(std::string symbolName)
             return symbol;
         }
     }
-    //cout error message
-    std::cout<< "Undefined Symbol found in Transition : "<< symbolName << std::endl;	
+    if(symbolName == blank_symbol.name)
+    {
+        return blank_symbol;
+    }
+    // cout error message
+    std::cout << "Undefined Symbol found in Transition : " << symbolName << std::endl;
     exit(1);
-    
+
     return Symbol();
+}
+
+bool Machine::in(std::string stateName, std::vector<State> states)
+{
+    for (auto state : states)
+    {
+        if (state.name == stateName)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 
 bool Machine::run()
 {
-    //1. solve tape forward references while executing 
-    //2. solve state forward references while executing
-    //3. solve symbol forward references while executing
-    //4. Run the turing machine based on transition sequence matching 
+    // 1. solve tape forward references while executing
+    // 2. solve state forward references while executing
+    // 3. solve symbol forward references while executing
+    // 4. Run the turing machine based on transition sequence matching
     State currentState = this->initial_state;
-    Tape currentTape = this->tapes[0]; //the first tape used will always be the first tape in the vector
-    
-    bool completed = false; 
-    bool matched = false;
-    bool rejected = false; 
-    while(!completed)
+    int current_tape_index = 0;
+
+    for(int i = 0 ; i  <states.size() ;i++)
     {
-        for(int i  = 0 ; i < transitions.size() ; i++)
+        if(in(states[i].name,final_states))
+        {
+            states[i].isFinal = true;
+        }
+    }
+    bool completed = false;
+    bool matched = false;
+    bool rejected = false;
+    while (!completed)
+    {
+        for (int i = 0; i < transitions.size(); i++)
         {
 
-            if(transitions[i].does_match(currentState, getSymbol(currentTape.get_current()), currentTape ))
+             if (transitions[i].does_match(currentState, getSymbol(tapes[current_tape_index].get_current()), tapes[current_tape_index]))
             {
                 matched = true;
-                currentTape.update_current(transitions[i].output_symbol.name);
+                if (ignore_unknowns)
+                {
+                    tapes[current_tape_index].update_current(transitions[i].output_symbol.name);
+                }
+                else
+                {
+                    Symbol s = getSymbol(transitions[i].output_symbol.name); // added symbol existence check
+                    tapes[current_tape_index].update_current(s.name);
+                }
+
                 currentState = transitions[i].nextState;
-                if(getState(currentState.name).isFinal)
+                if (getState(currentState.name).isFinal)
                 {
                     completed = true;
-                    
                 }
-                if(transitions[i].Direction.subtype == Subtype::DIRECTION_RIGHT)
+                if (transitions[i].Direction.subtype == Subtype::TRANSITION_DIRECTION_SYMBOL)
                 {
-                    currentTape.move_right();
+                    if(transitions[i].Direction.name == "->")
+                    {
+                        tapes[current_tape_index].move_right();
+                    }
+                    else if(transitions[i].Direction.name == "<-")
+                    {
+                        tapes[current_tape_index].move_left();
+                    }
                 }
-                else if(transitions[i].Direction.subtype == Subtype::DIRECTION_LEFT)
+                else
                 {
-                    currentTape.move_left();
+                    // do nothing
                 }
-                else {
-                    //do nothing 
-                }
-                currentTape = getTape(transitions[i].nextTape.name); 
+                current_tape_index = getTape(transitions[i].nextTape.name);
 
             }
-
         }
-        if(!matched)
+        if (!matched)
         {
-            std::cout<< name <<" : No transition found for current state ("<< currentState.name<<") and symbol ("<<currentTape.get_current()<<") ,exiting" << std::endl;
-            rejected = true; 
+            std::cout << name << " : No transition found for current state (" << currentState.name << ") and symbol (" << tapes[current_tape_index].get_current() << ") ,exiting" << std::endl;
+            rejected = true;
             completed = true;
         }
-
+        matched = false;
     }
-    if(rejected)
+    if (rejected)
     {
-        if(relay.relay_to_console_on_reject)
+        if (relay.relay_to_console_on_reject)
         {
-            std::cout<< name << " (Reject) : "<<std::endl; 
-            for(int i = 0 ; i < tapes.size() ; i++)
+            std::cout << name << " (Reject) : " << std::endl;
+            for (int i = 0; i < tapes.size(); i++)
             {
-                std::cout<< tapes[i].name << " : "<< tapes[i].tape_contents << std::endl;
+                std::cout << tapes[i].name << " : " << tapes[i].tape_contents << std::endl;
             }
         }
     }
-    else{
-        if(relay.relay_to_console_on_accept)
+    else
+    {
+        if (relay.relay_to_console_on_accept)
         {
-            std::cout<< name << " (Accept) : "<<std::endl; 
-            for(int i = 0 ; i < tapes.size() ; i++)
+            std::cout << name << " (Accept) : " << std::endl;
+            for (int i = 0; i < tapes.size(); i++)
             {
-                std::cout<< tapes[i].name << " : "<< tapes[i].tape_contents << std::endl;
+                std::cout << tapes[i].name << " : " << tapes[i].tape_contents << std::endl;
             }
         }
     }
-
-
-
-
+    return true;
 }
 #endif

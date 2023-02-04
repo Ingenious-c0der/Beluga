@@ -243,6 +243,15 @@ bool machine_exists_and_consumes(Machine consumer, Machine relays, std::vector<M
 std::vector<Machine> topo_sort(std::vector<Machine> machines)
 {
     std::vector<Machine> sorted_machines;
+    if(machines.size() == 0)
+    {
+        return sorted_machines;
+    }
+    else if(machines.size() == 1)
+    {
+        sorted_machines.push_back(machines[0]);
+        return sorted_machines;
+    }
     RP_CONTAINER container;
     for (int i = 0; i < machines.size(); i++)
     {
@@ -274,8 +283,11 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
             GROSSLY_DEPENDENT_MACHINES.push_back(AFTER[i]);
         }
     }
+   // std::cout<< "Grossly dependent machines: "<< GROSSLY_DEPENDENT_MACHINES.size() << std::endl;
+
     int initial_size = machines.size() - GROSSLY_DEPENDENT_MACHINES.size();
-    std::cout << "Topological sorting" << std::endl;
+   // std::cout << "Initial size: " << initial_size << std::endl;
+    //std::cout << "Topological sorting" << std::endl;
 
     std::vector<std::string> buffer_name_machines;
     while (!sorted)
@@ -318,11 +330,7 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
     {
         sorted_machines.push_back(mac);
     }
-    // cout sorted machine sequence
-    for (auto mac : sorted_machines)
-    {
-        std::cout << mac.name << std::endl;
-    }
+
     return sorted_machines;
 }
 

@@ -29,7 +29,7 @@ Tape::Tape()
     this->name = "tape_undefined";
     this->tape_contents = "";
     this->current_index = 0;
-    this->current = "";
+
 }
 
 Tape::Tape(std::string name, std::string tape_contents,int index = 0)
@@ -39,7 +39,6 @@ Tape::Tape(std::string name, std::string tape_contents,int index = 0)
     this->tape_contents.insert(0, "$");
     this->tape_contents.append("$");
     this->current_index = index + 1;
-    this->current = tape_contents[index + 1];
     // allow for dynamic tape expansion later ,right now its LBA tape
 }
 Tape::Tape(std::string name)
@@ -59,12 +58,12 @@ void Tape::move_left()
         else
         {
             current_index--;
-            current = tape_contents[current_index];
+          
         }
     }
     catch (ERROR_TYPES e)
     {
-        std::cout << "An Error Occured while trying to move left on the tape : " << this->name << stringify(e) << std::endl;
+        std::cout << "An Error Occured while trying to move left on the tape : " << this->name <<" " << stringify(e) << std::endl;
         exit(1); // exit with error
     }
 }
@@ -79,24 +78,25 @@ void Tape::move_right()
         else
         {
             current_index++;
-            current = tape_contents[current_index];
+            
         }
     }
     catch (ERROR_TYPES e)
     {
-        std::cout << "An Error Occured while trying to move right on the tape : " << this->name << stringify(e) << std::endl;
+        std::cout << "An Error Occured while trying to move right on the tape : " << this->name <<" "<< stringify(e) << std::endl;
         exit(1); // exit with error
     }
 }
 
 void Tape::update_current(std::string new_current)
 {
-    this->current = new_current;
+  
+    this->tape_contents[current_index] = new_current[0];
 }
 
 std::string Tape::get_current()
 {
-    return current;
+    return std::string(1,tape_contents[current_index]);
 }
 
 #endif
