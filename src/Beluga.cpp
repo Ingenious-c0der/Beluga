@@ -1,5 +1,5 @@
 #include "core.cpp"
-
+#include "file_handler.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,6 +11,8 @@ int main(int argc, char *argv[])
     }
     if (argc == 2)
     {
+        //handle file related errors
+        sanitize_file(argv[1]);
         execute(argv[1]);
     }
     return 0;
