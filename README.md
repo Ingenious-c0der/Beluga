@@ -6,7 +6,7 @@ Beluga Language is an esoteric programming language based on fundamental impleme
 As of now, its in active development (Just Started Out!), and mimics the model of a Linear Bounded Automata and sooner that of a general 
 turing machine(with finite tape). 
 
-## [How to run on windows](https://github.com/Ingenious-c0der/Beluga/blob/master/README.md#installation) ?  
+## [How to run Beluga on windows](https://github.com/Ingenious-c0der/Beluga/blob/master/README.md#installation) ?  
 
 ### [Read the docs](https://github.com/Ingenious-c0der/Beluga/blob/master/documentation.md#welcome-to-beluga-docs)
 You now have the power to directly write and run turing machines!
@@ -81,17 +81,14 @@ outputTape : $^HelloWorld!^$
 
 The language is designed to be simple, and easy to understand. In theory , it is capable of solving any problem that can be solved by a turing machine/ digital computer. Beluga supports multi tape turing machines
 
-The language uses C++ for compilation, so you need a C++ compiler to compile beluga code.
 
 ## Installation 
 
-### Windows (g++ compiler Required)
-#### 1. Clone the Project 
-#### 2. Navigate to Beluga/src/Beluga.cpp
-#### 3. Compile the file using g++ compiler, make sure the beluga.exe file is compiled in the same directory and is available as Beluga/src/beluga.exe
-#### 4. Add the directory (C:/Users.<where ever your beluga src folder is cloned>./Beluga/src) to your PATH variable
-for example - C:/Users/username/Desktop/Beluga/src
-#### 5. You are good to go!
+### Windows 
+#### 1. Download the beluga exe file from [here](https://github.com/Ingenious-c0der/Beluga/releases/download/0.0.1/Beluga.exe)
+#### 2. Add the directory in which the exe is downloaded to your *PATH* variable
+for example if the beluga.exe lies in C:/Users/username/Desktop/src/beluga.exe then C:/Users/username/Desktop/src should be the path
+#### 3. You are good to go!
 Run the file as Beluga <filename.beluga>
 
 ![image](https://user-images.githubusercontent.com/76046349/216761110-0dfd9be5-f993-4a61-89e5-601086684d6d.png)
