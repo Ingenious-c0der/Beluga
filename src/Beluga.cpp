@@ -3,7 +3,6 @@
 
 int main(int argc, char *argv[])
 {
-    //handle file related errors
     if (argc == 1)
     {
         std::cout << "No Beluga file path specified" << std::endl;
