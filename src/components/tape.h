@@ -20,7 +20,7 @@ public:
     void move_left();
     void move_right();
     std::string get_current();
-   
+    std::string get_name();
     void update_current(std::string);
 };
 
@@ -29,6 +29,7 @@ Tape::Tape()
     this->name = "tape_undefined";
     this->tape_contents = "";
     this->current_index = 0;
+    this->current = "$";
 
 }
 
@@ -45,6 +46,11 @@ Tape::Tape(std::string name)
 {
     this->name = name;
     this->is_reference = true;
+}
+
+std::string Tape::get_name()
+{
+    return this->name;
 }
 
 void Tape::move_left()

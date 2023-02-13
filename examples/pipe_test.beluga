@@ -1,0 +1,41 @@
+machine(pipe_1) => {
+    consumes : (null)
+    tape : ({t0,1111111111B}) 
+    def : (
+            {q0,complete}
+            {1}
+            {
+                (q0,1,q0,2,->,t0,t0),
+                (q0,B,complete,B,->,t0,t0)
+            }
+            (q0)
+            (B)
+            (complete)
+    )
+    ignoreUnknowns : (accept)
+    relay : {
+        onAccept: (console,pipe_2)
+        onReject: (console)
+    }
+}
+
+machine (pipe_2) => {
+    consumes : (pipe_1)
+    tape : () 
+    def : (
+            {q0,complete}
+            {1,2}
+            {
+                (q0,2,q0,3,->,t0,t0),
+                (q0,B,complete,B,->,t0,t0)
+            }
+            (q0)
+            (B)
+            (complete)
+    )
+    ignoreUnknowns : (accept)
+    relay : {
+        onAccept: (console)
+        onReject: (console)
+    }
+}

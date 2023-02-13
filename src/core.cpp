@@ -165,14 +165,27 @@ void machine_unique_name_check(std::vector<Machine> machines)
     }
 }
 
-std::vector<Tape> combine_tapes(std::vector<Tape> tapes_1, std::vector<Tape> tapes_2)
+void combine_tapes(std::string ext_mac_name, std::vector<Tape> tapes_2 , std::vector<Machine> & machines)
 {
 
+    int ext_mac_index = -1;
+    for (int i = 0; i < machines.size(); i++)
+    {
+        if (machines[i].name == ext_mac_name)
+        {
+            ext_mac_index = i;
+            break;
+        }
+    }
+    if(ext_mac_index == -1)
+    {
+        std::string error_name = "Machine name " + ext_mac_name + " is not found while combining tapes";
+        throw std::runtime_error(error_name);
+    }
     for (auto tape : tapes_2)
     {
-        tapes_1.push_back(tape);
+        machines[ext_mac_index].tapes.push_back(tape);
     }
-    return tapes_1;
 }
 
 bool in_state_set(Machine m, State s)
@@ -197,6 +210,19 @@ bool not_in(int n, std::vector<int> nums)
         }
     }
     return true;
+}
+
+Machine get_machine_by_name(std::string name, std::vector<Machine> machines)
+{
+    for (auto machine : machines)
+    {
+        if (machine.name == name)
+        {
+            return machine;
+        }
+    }
+    std::string error_name = "Machine name " + name + " is not found while fetching machine by name";
+    throw std::runtime_error(error_name);
 }
 
 bool not_in(Machine m, std::vector<Machine> machines, std::vector<Machine> machines_2)
@@ -255,20 +281,24 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
     RP_CONTAINER container;
     for (int i = 0; i < machines.size(); i++)
     {
+        //remember ext_mac is not an actual machine, it is just a name reference
         for (auto ext_mac : machines[i].relay.to_relay_machine_on_accept)
         {
             if (machine_exists_and_consumes(ext_mac, machines[i], machines))
             {
-                container.add_pair(Resolution_Pair(machines[i], ext_mac));
-                ext_mac.tapes = combine_tapes(ext_mac.tapes, machines[i].tapes);
+                combine_tapes(ext_mac.name, machines[i].tapes , machines);
+                container.add_pair(Resolution_Pair(machines[i], get_machine_by_name(ext_mac.name, machines)));
+               
             }
         }
         for (auto ext_mac : machines[i].relay.to_relay_machine_on_reject)
         {
             if (machine_exists_and_consumes(ext_mac, machines[i], machines))
             {
-                container.add_pair(Resolution_Pair(machines[i], ext_mac));
-                ext_mac.tapes = combine_tapes(ext_mac.tapes, machines[i].tapes);
+                //std::cout << "Machine " << machines[i].name << " relays to " << ext_mac.name << " on reject" << std::endl;
+                combine_tapes(ext_mac.name, machines[i].tapes , machines);
+                container.add_pair(Resolution_Pair(machines[i],get_machine_by_name(ext_mac.name, machines)));
+               
             }
         }
     }
@@ -341,6 +371,7 @@ void execute(std::string filename)
     machine_unique_name_check(machines);
     machines = topo_sort(machines);
     for(auto machine : machines){
+      
         machine.run();
     }
 }

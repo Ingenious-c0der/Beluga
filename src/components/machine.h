@@ -82,7 +82,7 @@ public:
     Relay relay;
     State initial_state;
     Symbol blank_symbol;
-    std::vector<Tape> tapes;
+    std::vector<Tape> tapes; // should be Tape*
     std::vector<Transition> transitions;
     std::vector<State> states;
     std::vector<Symbol> symbols;
