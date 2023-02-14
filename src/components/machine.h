@@ -271,8 +271,16 @@ bool Machine::run()
     {
         for (int i = 0; i < transitions.size(); i++)
         {
-
-            if (transitions[i].does_match(currentState, getSymbol(ref_tapes[current_tape_index]->get_current()), *ref_tapes[current_tape_index]))
+            Symbol current_symbol = getSymbol(ref_tapes[current_tape_index]->get_current());
+            if (current_symbol.subtype == Subtype::DOLLAR_SYMBOL)
+            {
+               
+                completed = true;
+                rejected = true;
+                std::cout << "Unexpectedly hit the hard tape end : '$' on tape " << transitions[i].currentTape.name << " while trying to move in " << transitions[i].Direction.name << " direction , to resolve this error refer https://github.com/Ingenious-c0der/Beluga/blob/master/documentation.md#---dollar-symbol " << std::endl;
+                 break; 
+            }
+            else if (transitions[i].does_match(currentState, current_symbol, *ref_tapes[current_tape_index]))
             {
                 matched = true;
                 if (ignore_unknowns)
@@ -282,6 +290,7 @@ bool Machine::run()
                 else
                 {
                     Symbol s = getSymbol(transitions[i].output_symbol.name); // added symbol existence check
+
                     if (s.subtype == Subtype::DOLLAR_SYMBOL)
                     {
                         completed = true;
@@ -322,7 +331,7 @@ bool Machine::run()
     {
         if (relay.relay_to_console_on_reject)
         {
-            std::cout << name << " (Reject) : " << std::endl;
+            std::cout << name << " (Rejected) : " << std::endl;
             for (int i = 0; i < ref_tapes.size(); i++)
             {
                 std::cout << ref_tapes[i]->name << " : " << ref_tapes[i]->display() << std::endl;
@@ -333,7 +342,7 @@ bool Machine::run()
     {
         if (relay.relay_to_console_on_accept)
         {
-            std::cout << name << " (Accept) : " << std::endl;
+            std::cout << name << " (Accepted) : " << std::endl;
             for (int i = 0; i < ref_tapes.size(); i++)
             {
                 std::cout << ref_tapes[i]->name << " : " << ref_tapes[i]->display() << std::endl;
