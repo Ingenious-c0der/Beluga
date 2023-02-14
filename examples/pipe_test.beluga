@@ -24,7 +24,7 @@ machine (pipe_2) => {
     tape : () 
     def : (
             {q0,complete}
-            {1,2}
+            {2}
             {
                 (q0,2,q0,3,->,t0,t0),
                 (q0,B,complete,B,->,t0,t0)

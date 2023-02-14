@@ -96,6 +96,7 @@ enum class Subtype
     WRITE_SYMBOL, 
     DIRECTION_LEFT, 
     DIRECTION_RIGHT,
+    DOLLAR_SYMBOL,
 };
 
 #endif

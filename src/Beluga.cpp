@@ -11,7 +11,6 @@ int main(int argc, char *argv[])
     if (argc == 2)
     {
         //handle file related errors
-        std::cout<< "File path: " << argv[1] << std::endl;
         sanitize_file(argv[1]);
         execute(argv[1]);
     }

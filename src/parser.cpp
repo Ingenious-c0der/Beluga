@@ -357,7 +357,7 @@ std::vector<LEXER_Element> sanitizer_secondary(std::vector<LEXER_Element> partia
     return partial_unknown_tokens;
 }
 
-std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
+std::vector<Machine> parse(const std::vector<LEXER_Element> tokens)
 {
     auto condensed_tokens = condensor(tokens);
     auto san_pri = sanitizer_primary(condensed_tokens);
@@ -399,18 +399,20 @@ std::vector<Machine> parse(std::vector<LEXER_Element> tokens)
                 else if (san_sec[i].type == Token::TAPE_TOKEN)
                 {
                     i += 3;
-                    std::vector<Tape> temp_tape;
+              
                     while (san_sec[i].type != Token::CPR_TOKEN)
                     {
 
                         if (san_sec[i].type == Token::TAPE_NAME_TOKEN)
                         {
-                            temp_tape.push_back(Tape(san_sec[i].value, san_sec[i + 2].value));
+                            Tape* tape_ref = new Tape(san_sec[i].value, san_sec[i + 2].value);
+                            temp_machine.ref_tapes.push_back(tape_ref);
                             i += 2;
+                            tape_ref = nullptr; 
                         }
                         i++;
                     }
-                    temp_machine.tapes = temp_tape;
+                    
                 
                 }
                 else if (san_sec[i].type == Token::DEF_TOKEN)

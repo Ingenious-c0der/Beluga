@@ -1,23 +1,11 @@
 relays can be a neat way to achieve recursive turing machines. 
-to avoid endless pipelining, use the consume history of the machine 
 modernize the cpp used (optimization)
 concurrent excecution for independent machine tree topologies 
 shift errors to compile time (in C++)
-tape name clash
 machine imports 
-
-
-tape should be reference and not a vector at machine level to maintain update pushes
-
-
-
-
-
-
 remove consumes? (anyway relay will get the topological sorting job done , consumes can be a entry 
 restricting mechanism , but seems very unncessary)
-graph cycles aren't currently detected
-
+console input
 compilation flags 
 - perf
 - debug //support this 

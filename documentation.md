@@ -134,11 +134,16 @@ Piping different turing machines can be an essential tool to solve complex probl
 - reject
 
 #### Reserved Symbols :
-- ( )
-- { }
-- ,
-- :
-- => 
+- ( ) : Parenthesis Symbols
+- { } : Curly Braces Symbols
+- ,   : Comma Symbol
+- :   : Colon Symbol
+- =>  : Fat Arrow Symbol
+- $   : Dollar Symbol
+
+
+#####  $  : Dollar Symbol 
+Internally the dollar symbol is always appended at the both ends of tapes marking the absolute start and end of the tape. This is done to avoid out of bounds errors while reading the tape. The dollar symbol is not visible to the user.If you get an error saying that the transition has hit the $ symbol, it means that the transition has evaded your bounding logic and has hit the absolute start/end of the tape. To resolve this error make sure that you are not moving left or right on any corner symbols of the tape. 
 
 #### Should the order of appearance of constructs be maintained?
 - Yes, the order of appearance of constructs should be maintained. The order of appearance of constructs is important for the language to be compiled and executed.
@@ -157,6 +162,15 @@ Piping different turing machines can be an essential tool to solve complex probl
 
 #### Can I use the same machine name in different machines?
 - No, the machine name should be unique. The machine name is used to identify the machine.
+
+#### Error : Cyclic Dependency (Deadlock) detected between Turing Machines :
+- This error is thrown when the Turing machines are pipelined in a cyclic manner. This error is thrown during the compilation phase. To resolve this error, make sure that the Turing machines are pipelined in a topologically sound manner.
+For example if Turing machine A relays to Turing machine B and Turing machine B relays to Turing machine C, then Turing machine C should not relay to Turing machine A.
+
+#### Error : Tape Name Clash :
+- This error is thrown when Turing machine A relays its tapes to turing machine B and turing machine B already has a tape named the same as one of the tapes relayed by Turing machine A. This error is thrown during the compilation phase. To resolve this error,make sure that tape names are unique across pipelined Turing machines.
+Example : 
+ T.M. A with tapes {t0,t1,t2} relays to T.M. B with tapes {t0,t3,t4} will throw an error because T.M. B already has a tape named t0.To resolve, simply rename the tapes in T.M. B to {t5,t3,t4}.
 
 ### Question/ Error not listed here? 
 - Please create an issue in the repo.

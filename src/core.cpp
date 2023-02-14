@@ -165,7 +165,7 @@ void machine_unique_name_check(std::vector<Machine> machines)
     }
 }
 
-void combine_tapes(std::string ext_mac_name, std::vector<Tape> tapes_2 , std::vector<Machine> & machines)
+void combine_tapes(std::string ext_mac_name, std::vector<Tape*> tapes_2 , std::vector<Machine> & machines)
 {
 
     int ext_mac_index = -1;
@@ -182,21 +182,23 @@ void combine_tapes(std::string ext_mac_name, std::vector<Tape> tapes_2 , std::ve
         std::string error_name = "Machine name " + ext_mac_name + " is not found while combining tapes";
         throw std::runtime_error(error_name);
     }
+    for(auto t: machines[ext_mac_index].ref_tapes)
+    {
+        if(t->get_name() == tapes_2[0]->get_name())
+        {
+            std::string error = "Error Tape Name Clash : Tape name " + t->get_name() + " is not unique while combining tapes for machine "+ ext_mac_name ;
+            std::string resolve_error = "To resolve this error , please refer ";
+            std::cout << error << std::endl;
+            std::cout << resolve_error << std::endl;
+            exit(1);
+        }
+    }
+
+
     for (auto tape : tapes_2)
     {
-        machines[ext_mac_index].tapes.push_back(tape);
+        machines[ext_mac_index].ref_tapes.push_back(tape);
     }
-}
-
-bool in_state_set(Machine m, State s)
-{
-
-    return true;
-}
-
-bool in_tape_set(Machine m, Tape t)
-{
-    return true;
 }
 
 bool not_in(int n, std::vector<int> nums)
@@ -286,7 +288,7 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
         {
             if (machine_exists_and_consumes(ext_mac, machines[i], machines))
             {
-                combine_tapes(ext_mac.name, machines[i].tapes , machines);
+                combine_tapes(ext_mac.name, machines[i].ref_tapes , machines);
                 container.add_pair(Resolution_Pair(machines[i], get_machine_by_name(ext_mac.name, machines)));
                
             }
@@ -296,7 +298,7 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
             if (machine_exists_and_consumes(ext_mac, machines[i], machines))
             {
                 //std::cout << "Machine " << machines[i].name << " relays to " << ext_mac.name << " on reject" << std::endl;
-                combine_tapes(ext_mac.name, machines[i].tapes , machines);
+                combine_tapes(ext_mac.name, machines[i].ref_tapes , machines);
                 container.add_pair(Resolution_Pair(machines[i],get_machine_by_name(ext_mac.name, machines)));
                
             }
@@ -338,7 +340,12 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
             {
                 break;
             }
-            std::cout << "Error: Cyclic dependency detected" << std::endl;
+            std::cout << "Error: Cyclic dependency (Deadlock) detected for the following machines" << std::endl;
+            for (auto mac : container.get_befores())
+            {
+                std::cout << mac.name << std::endl;
+            }
+            std::cout << "To resolve this error, refer " << std::endl;
             exit(1);
         }
         else if (sorted_machines.size() == initial_size)

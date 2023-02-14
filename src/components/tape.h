@@ -21,8 +21,11 @@ public:
     void move_right();
     std::string get_current();
     std::string get_name();
+    std::string display() ; 
     void update_current(std::string);
+    void reset();
 };
+
 
 Tape::Tape()
 {
@@ -94,10 +97,20 @@ void Tape::move_right()
     }
 }
 
+std::string Tape::display()
+{
+     return tape_contents.substr(1,tape_contents.length()-2) ;
+}
+
 void Tape::update_current(std::string new_current)
 {
   
     this->tape_contents[current_index] = new_current[0];
+}
+
+void Tape::reset()
+{
+    this->current_index = 1;
 }
 
 std::string Tape::get_current()
