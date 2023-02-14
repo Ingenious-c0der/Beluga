@@ -142,8 +142,9 @@ Piping different turing machines can be an essential tool to solve complex probl
 - $   : Dollar Symbol
 
 
-#####  $  : Dollar Symbol 
-Internally the dollar symbol is always appended at the both ends of tapes marking the absolute start and end of the tape. This is done to avoid out of bounds errors while reading the tape. The dollar symbol is not visible to the user.If you get an error saying that the transition has hit the $ symbol, it means that the transition has evaded your bounding logic and has hit the absolute start/end of the tape. To resolve this error make sure that you are not moving left or right on any corner symbols of the tape. 
+### $  : Dollar Symbol 
+Internally the dollar symbol is always appended at the both ends of tapes marking the absolute start and end of the tape. This is done to avoid out of bounds errors while reading the tape. The dollar symbol is not visible to the user.
+If you get an Error "Unexpectedly hit the hard tape end : '$'", it means that the transition has evaded your bounding logic and has hit the absolute start/end of the tape. To resolve this error make sure that you are not moving left or right on any corner symbols of the tape. 
 
 #### Should the order of appearance of constructs be maintained?
 - Yes, the order of appearance of constructs should be maintained. The order of appearance of constructs is important for the language to be compiled and executed.

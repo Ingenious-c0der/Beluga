@@ -187,7 +187,7 @@ void combine_tapes(std::string ext_mac_name, std::vector<Tape*> tapes_2 , std::v
         if(t->get_name() == tapes_2[0]->get_name())
         {
             std::string error = "Error Tape Name Clash : Tape name " + t->get_name() + " is not unique while combining tapes for machine "+ ext_mac_name ;
-            std::string resolve_error = "To resolve this error , please refer ";
+            std::string resolve_error = "To resolve this error , please refer https://github.com/Ingenious-c0der/Beluga/blob/master/documentation.md#error--tape-name-clash-";
             std::cout << error << std::endl;
             std::cout << resolve_error << std::endl;
             exit(1);
@@ -345,7 +345,7 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
             {
                 std::cout << mac.name << std::endl;
             }
-            std::cout << "To resolve this error, refer " << std::endl;
+            std::cout << "To resolve this error, refer https://github.com/Ingenious-c0der/Beluga/blob/master/documentation.md#error--cyclic-dependency-deadlock-detected-between-turing-machines-" << std::endl;
             exit(1);
         }
         else if (sorted_machines.size() == initial_size)

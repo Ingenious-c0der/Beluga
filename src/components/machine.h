@@ -82,7 +82,7 @@ public:
     Relay relay;
     State initial_state;
     Symbol blank_symbol;
-    std::vector<Tape*> ref_tapes ; 
+    std::vector<Tape *> ref_tapes;
     std::vector<Transition> transitions;
     std::vector<State> states;
     std::vector<Symbol> symbols;
@@ -92,13 +92,13 @@ public:
     bool run();
     Symbol getSymbol(std::string);
     State getState(std::string);
-    int get_ref_tape(std::string); 
+    int get_ref_tape(std::string);
     bool in(std::string, std::vector<State>);
     std::string name;
     void to_string();
     Machine();
     Machine(std::string);
-    Machine(Consumes, Relay, State, Symbol,std::vector<Tape*> , std::vector<Transition>, std::vector<State>, std::vector<Symbol>, std::vector<State>, bool, bool);
+    Machine(Consumes, Relay, State, Symbol, std::vector<Tape *>, std::vector<Transition>, std::vector<State>, std::vector<Symbol>, std::vector<State>, bool, bool);
 };
 Machine::Machine()
 {
@@ -107,14 +107,14 @@ Machine::Machine(std::string name)
 {
     this->name = name;
 }
-Machine::Machine(Consumes consumes, Relay relay, State initial_state, Symbol blank_symbol, std::vector<Tape*> ref_tapes, std::vector<Transition> transitions, std::vector<State> states, std::vector<Symbol> symbols, std::vector<State> final_states, bool ignore_unknowns, bool is_forward_reference)
+Machine::Machine(Consumes consumes, Relay relay, State initial_state, Symbol blank_symbol, std::vector<Tape *> ref_tapes, std::vector<Transition> transitions, std::vector<State> states, std::vector<Symbol> symbols, std::vector<State> final_states, bool ignore_unknowns, bool is_forward_reference)
 {
-   this->ref_tapes = ref_tapes; 
-   this->consumes = consumes;
+    this->ref_tapes = ref_tapes;
+    this->consumes = consumes;
     this->relay = relay;
     this->initial_state = initial_state;
     this->blank_symbol = blank_symbol;
-    
+
     this->transitions = transitions;
     this->states = states;
     this->symbols = symbols;
@@ -187,7 +187,7 @@ State Machine::getState(std::string stateName)
 
 int Machine::get_ref_tape(std::string tapeName)
 {
-  for (int i = 0; i < ref_tapes.size(); i++)
+    for (int i = 0; i < ref_tapes.size(); i++)
     {
         if (ref_tapes[i]->name == tapeName)
         {
@@ -198,7 +198,6 @@ int Machine::get_ref_tape(std::string tapeName)
     exit(1);
     return -1;
 }
-
 
 Symbol Machine::getSymbol(std::string symbolName)
 {
@@ -213,9 +212,9 @@ Symbol Machine::getSymbol(std::string symbolName)
     {
         return blank_symbol;
     }
-    else if(symbolName == "$")
+    else if (symbolName == "$")
     {
-        return Symbol("$",Subtype::DOLLAR_SYMBOL);
+        return Symbol("$", Subtype::DOLLAR_SYMBOL);
     }
     // cout error message
     std::cout << "Undefined Symbol found in Transition : " << symbolName << std::endl;
@@ -244,18 +243,18 @@ bool Machine::run()
     // 4. Run the turing machine based on transition sequence matching
     State currentState = this->initial_state;
     int current_tape_index = -1;
-    //setting the current tape index to the tape seen in the first transition sequentially , should this work every time? brood. 
+    // setting the current tape index to the tape seen in the first transition sequentially , should this work every time? brood.
     for (int i = 0; i < ref_tapes.size(); i++)
     {
-        if(ref_tapes[i]-> name == transitions[0].currentTape.name)
+        if (ref_tapes[i]->name == transitions[0].currentTape.name)
         {
             current_tape_index = i;
             break;
         }
     }
-    if(current_tape_index == -1)
+    if (current_tape_index == -1)
     {
-        std::cout << "Error: Unkwown Tape name "<<transitions[0].currentTape.name << std::endl;
+        std::cout << "Error: Unkwown Tape name " << transitions[0].currentTape.name << std::endl;
         exit(1);
     }
     for (int i = 0; i < states.size(); i++)
@@ -272,7 +271,7 @@ bool Machine::run()
     {
         for (int i = 0; i < transitions.size(); i++)
         {
-		
+
             if (transitions[i].does_match(currentState, getSymbol(ref_tapes[current_tape_index]->get_current()), *ref_tapes[current_tape_index]))
             {
                 matched = true;
@@ -283,11 +282,11 @@ bool Machine::run()
                 else
                 {
                     Symbol s = getSymbol(transitions[i].output_symbol.name); // added symbol existence check
-                    if(s.subtype == Subtype::DOLLAR_SYMBOL)
+                    if (s.subtype == Subtype::DOLLAR_SYMBOL)
                     {
-                        completed = true; 
-                        rejected = true; 
-                        std::cout<< "Unexpectedly hit the hard tape end : '$' , to resolve this error refer " << std::endl;
+                        completed = true;
+                        rejected = true;
+                        std::cout << "Unexpectedly hit the hard tape end : '$' on tape " << transitions[i].currentTape.name << " while trying to move in " << transitions[i].Direction.name << " direction , to resolve this error refer https://github.com/Ingenious-c0der/Beluga/blob/master/documentation.md#---dollar-symbol " << std::endl;
                     }
                     ref_tapes[current_tape_index]->update_current(s.name);
                 }
@@ -326,7 +325,7 @@ bool Machine::run()
             std::cout << name << " (Reject) : " << std::endl;
             for (int i = 0; i < ref_tapes.size(); i++)
             {
-                std::cout << ref_tapes[i]->name << " : " <<ref_tapes[i]->display() << std::endl;
+                std::cout << ref_tapes[i]->name << " : " << ref_tapes[i]->display() << std::endl;
             }
         }
     }
@@ -337,11 +336,11 @@ bool Machine::run()
             std::cout << name << " (Accept) : " << std::endl;
             for (int i = 0; i < ref_tapes.size(); i++)
             {
-                std::cout <<ref_tapes[i]->name << " : " << ref_tapes[i]->display() << std::endl;
+                std::cout << ref_tapes[i]->name << " : " << ref_tapes[i]->display() << std::endl;
             }
         }
     }
-    for(int i = 0; i < ref_tapes.size(); i++)
+    for (int i = 0; i < ref_tapes.size(); i++)
     {
         ref_tapes[i]->reset();
     }
