@@ -405,10 +405,17 @@ std::vector<Machine> parse(const std::vector<LEXER_Element> tokens)
 
                         if (san_sec[i].type == Token::TAPE_NAME_TOKEN)
                         {
-                            Tape* tape_ref = new Tape(san_sec[i].value, san_sec[i + 2].value);
+                            Tape * tape_ref =  nullptr; 
+                            if(san_sec[i+2].value == "#_#")
+                            {
+                                tape_ref = new Tape(san_sec[i].value ,"#",0, true);
+                            }
+                            else
+                            {
+                                tape_ref = new Tape(san_sec[i].value, san_sec[i + 2].value);
+                            }
                             temp_machine.ref_tapes.push_back(tape_ref);
                             i += 2;
-                            tape_ref = nullptr; 
                         }
                         i++;
                     }

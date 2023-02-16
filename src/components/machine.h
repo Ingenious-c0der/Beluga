@@ -90,7 +90,7 @@ public:
     bool ignore_unknowns = false;
     bool is_forward_reference = true;
     bool run();
-    Symbol getSymbol(std::string);
+    Symbol getSymbol(std::string, bool);
     State getState(std::string);
     int get_ref_tape(std::string);
     bool in(std::string, std::vector<State>);
@@ -199,7 +199,7 @@ int Machine::get_ref_tape(std::string tapeName)
     return -1;
 }
 
-Symbol Machine::getSymbol(std::string symbolName)
+Symbol Machine::getSymbol(std::string symbolName,bool is_infinite)
 {
     for (auto symbol : symbols)
     {
@@ -215,6 +215,13 @@ Symbol Machine::getSymbol(std::string symbolName)
     else if (symbolName == "$")
     {
         return Symbol("$", Subtype::DOLLAR_SYMBOL);
+    }
+    else if ( symbolName == "#")
+    {
+        if(is_infinite)
+        {
+            return Symbol("#", Subtype::TAPE_SYMBOL);
+        }
     }
     // cout error message
     std::cout << "Undefined Symbol found in Transition : " << symbolName << std::endl;
@@ -271,7 +278,7 @@ bool Machine::run()
     {
         for (int i = 0; i < transitions.size(); i++)
         {
-            Symbol current_symbol = getSymbol(ref_tapes[current_tape_index]->get_current());
+            Symbol current_symbol = getSymbol(ref_tapes[current_tape_index]->get_current(),ref_tapes[current_tape_index]->is_infinite);
             if (current_symbol.subtype == Subtype::DOLLAR_SYMBOL)
             {
                
@@ -289,7 +296,7 @@ bool Machine::run()
                 }
                 else
                 {
-                    Symbol s = getSymbol(transitions[i].output_symbol.name); // added symbol existence check
+                    Symbol s = getSymbol(transitions[i].output_symbol.name,ref_tapes[current_tape_index]->is_infinite); // added symbol existence check
 
                     if (s.subtype == Subtype::DOLLAR_SYMBOL)
                     {
