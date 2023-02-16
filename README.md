@@ -85,7 +85,7 @@ The language is designed to be simple, and easy to understand. In theory , it is
 ## Installation 
 
 ### Windows 
-#### 1. Download the beluga exe file from [here](https://github.com/Ingenious-c0der/Beluga/releases/download/0.0.1/Beluga.exe)
+#### 1. Download the beluga exe file from [here](https://github.com/Ingenious-c0der/Beluga/releases/download/v0.0.2/Beluga.exe)
 #### 2. Add the directory in which the exe is downloaded to your *PATH* variable
 for example if the beluga.exe lies in C:/Users/username/Desktop/src/beluga.exe then C:/Users/username/Desktop/src should be the path
 #### 3. You are good to go!
