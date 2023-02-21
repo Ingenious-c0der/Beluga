@@ -1,24 +1,27 @@
-machine (adder) => {
-    consumes : (null) 
-    tape : ({t0,abbb^bab^bab},{t1,abbb^bbedr^})
-    def: (
-            {q0,q1} /* finite set of states */
-            {a,b} /* finite set of input symbols */
+machine(adder) => {
+    consumes : (null)
+    tape : ({t0,11B},{t1,1111B},{t2,#_#}) /* #_# indicates infinite tape */
+    def : (
+            {q0,q1,complete}
+            {1}
             {
-                (q0,a,q0,a,->,t0,t0), /* transition */
-                (q0,b,q0,b,<-,t0,t1), /* transition */
-                (q0,^,q1,^,->,t0,t1), /* transition */
-                (q1,a,q1,a,->,t1,t1), /* transition */
-                (q1,b,q1,b,->,t1,t1), /* transition */
-                (q1,^,q1,^,->,t0,t0) /* transition */
-            } /* finite set of transitions */
-            (q0) /* initial state  */
-            (^) /* blank symbol  */
-            (q1) /* final states */
-         ) /* tuple of 6 entities  */
-    ignoreUnknowns : (accept) /* ignore unknown tape symbols, basic booleans are accept (true) and reject (false) */ 
+                (q0,1,q0,1,->,t0,t2),
+                (q0,#,q0,1,->,t2,t0),
+                (q0,B,q1,B,->,t0,t1),
+                (q1,1,q1,1,->,t1,t2),
+                (q1,#,q1,1,->,t2,t1),
+                (q1,B,complete,B,->,t1,t1)
+            }
+            (q0)
+            (B)
+            (complete)
+    )
+    ignoreUnknowns : (accept)
     relay : {
-        onAccept: (console) /* available relays are console, null,turing Machine(pipelined) */
-        onReject: (console) /* available relays are console, null,turing Machine (pipelined) */
+        onAccept: (console)
+        onReject: (console)
     }
 }
+
+
+
