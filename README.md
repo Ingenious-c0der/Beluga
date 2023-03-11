@@ -74,7 +74,7 @@ machine (helloWorld!) => {
 Output
 ```c#
 helloWorld! (Accept) : 
-outputTape : $^HelloWorld!^$
+outputTape : ^HelloWorld!^
 ```
 
 ##### custom syntax highlighting Soon™

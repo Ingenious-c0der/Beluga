@@ -24,6 +24,40 @@ int Identifier::identify(std::vector<LEXER_Element> &unid_elements)
             {
                 continue;
             }
+            else if(unid_elements[i].type == Token::IMPORT_TOKEN)
+            {
+                i++ ;
+                if(unid_elements[i].type == Token::CBL_TOKEN)
+                {
+                   while(unid_elements[i].type != Token::CBR_TOKEN)
+                   {
+                       if(unid_elements[i].type == Token::UNKNOWN_CONDENSED_TOKEN)
+                       {
+                           unid_elements[i].type = Token::IMPORT_MACHINE_NAME_TOKEN;
+                       }
+                       i++;
+                   }
+                }
+                else
+                {
+                    // throw error
+                    throw ERROR_TYPES::INVALID_IMPORT_STATEMENT;
+                }
+            }
+            else if(unid_elements[i].type == Token::IMPORT_FROM_TOKEN)
+            {
+                i++; 
+                if(unid_elements[i].type == Token::UNKNOWN_CONDENSED_TOKEN)
+                {
+                    unid_elements[i].type = Token::IMPORT_FILE_PATH_TOKEN;
+                }
+                else
+                {
+                    // throw error
+                    throw ERROR_TYPES::INVALID_IMPORT_STATEMENT;
+                }
+            }
+
             else if (unid_elements[i].type == Token::MACHINE_TOKEN)
             {
                 if (unid_elements[i + 1].type == Token::CPL_TOKEN && unid_elements[i + 2].type == Token::UNKNOWN_CONDENSED_TOKEN && unid_elements[i + 3].type == Token::CPR_TOKEN)

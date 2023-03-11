@@ -132,6 +132,8 @@ Piping different turing machines can be an essential tool to solve complex probl
 - console
 - accept
 - reject
+- import
+- from 
 
 #### Reserved Symbols :
 - ( ) : Parenthesis Symbols

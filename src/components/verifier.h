@@ -18,6 +18,8 @@ static const std::vector<Token> RELAY_DEF_GRAMMAR = {Token::RELAY_TOKEN, Token::
 static const std::vector<Token> MACHINE_CONTENTS_GRAMMAR = {Token::CBL_TOKEN, Token::CONSUMES_TOKEN, Token::TAPE_TOKEN, Token::DEF_TOKEN, Token::IGNORE_UNKNOWNS_TOKEN, Token::RELAY_TOKEN, Token::CBR_TOKEN};
 static const std::vector<Token> CONSUMES_DEF_GRAMMAR = {Token::CONSUMES_TOKEN, Token::COLON_TOKEN, Token::CPL_TOKEN, Token::CONSUMES_PUMPING_TOKEN, Token::CPR_TOKEN};
 static const std::vector<Token> DEF_DEF_GRAMMAR = {Token::DEF_TOKEN, Token::COLON_TOKEN, Token::CPL_TOKEN, Token::Q_SET_DEF_TOKEN, Token::SIGMA_DEF_TOKEN, Token::TRANSITION_DEF_TOKEN, Token::INITIAL_STATE_DEF_TOKEN, Token::BLANK_SYMBOL_DEF_TOKEN, Token::FINAL_STATE_DEF_TOKEN, Token::CPR_TOKEN};
+static const std::vector<Token> IMPORT_DEF_GRAMMAR = {Token::IMPORT_TOKEN, Token::CBL_TOKEN, Token::IMPORT_PUMPING_TOKEN, Token::CBR_TOKEN , Token::IMPORT_FROM_TOKEN , Token::IMPORT_FILE_PATH_TOKEN};
+
 //@semantic class, holds grammar for particular types
 class Verifier
 {
@@ -76,6 +78,38 @@ bool Verifier::verify_grammar(std::vector<Token> tokens, Grammar_Type GT)
             return true;
         }
         return false;
+    }
+    else if(GT== Grammar_Type::IMPORT_DEF_GRAMMAR)
+    {
+        int i = 0 ;
+        while(IMPORT_DEF_GRAMMAR[i] != Token::IMPORT_PUMPING_TOKEN)
+        {
+            if(tokens[i] != IMPORT_DEF_GRAMMAR[i])
+            {
+                return false;
+            }
+            i++;
+        }
+        while(tokens[i] != Token::CBR_TOKEN)
+        {
+           if (tokens[i] == Token::COMMA_TOKEN && tokens[i + 1] == Token::IMPORT_MACHINE_NAME_TOKEN)
+            {
+                i++;
+            }
+            else if (tokens[i] == Token::IMPORT_MACHINE_NAME_TOKEN && (tokens[i - 1] == Token::COMMA_TOKEN || tokens[i - 1] == Token::CBL_TOKEN))
+            {
+                i++;
+            }
+            else
+            {
+
+                return false;
+            }
+        }
+        if(tokens[i] == Token::CBR_TOKEN && tokens.size() - 1 == i)
+        {
+            return true;
+        }
     }
     else if (GT == Grammar_Type::TAPE_DEF_GRAMMAR)
     {

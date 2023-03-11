@@ -128,13 +128,13 @@ public:
         }
     }
 
-    void print_pairs()
-    {
-        for (auto pair : this->pairs)
-        {
-            std::cout << pair.before.name << " -> " << pair.after.name << std::endl;
-        }
-    }
+    // void print_pairs()
+    // {
+    //     for (auto pair : this->pairs)
+    //     {
+    //         std::cout << pair.before.name << " -> " << pair.after.name << std::endl;
+    //     }
+    // }
 };
 
 void machine_unique_name_check(std::vector<Machine> machines)
@@ -381,4 +381,9 @@ void execute(std::string filename)
       
         machine.run();
     }
+}
+
+std::vector<Machine> import_pipeline(std::string filename, std::vector<std::string> machine_names)
+{
+
 }

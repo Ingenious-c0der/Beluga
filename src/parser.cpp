@@ -34,12 +34,6 @@ std::vector<LEXER_Element> condensor(std::vector<LEXER_Element> tokens)
             condensed_tokens.push_back(tokens[i]);
         }
     }
-    // for (auto token : condensed_tokens)
-    // {
-    //     std::cout << token.value << " - " << tokenToString(token.type) << std::endl;
-    // }
-    // std::cout<<"*********************"<<std::endl;
-
     return condensed_tokens;
 }
 
@@ -99,6 +93,14 @@ std::vector<LEXER_Element> sanitizer_primary(std::vector<LEXER_Element> unclean_
             else if (unclean_tokens[i].value == "console")
             {
                 san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::CONSOLE_TOKEN));
+            }
+            else if(unclean_tokens[i].value == "import")
+            {
+                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::IMPORT_TOKEN));
+            }
+            else if(unclean_tokens[i].value == "from")
+            {
+                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::IMPORT_FROM_TOKEN));
             }
             else
             {
