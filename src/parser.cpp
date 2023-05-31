@@ -42,65 +42,33 @@ std::vector<LEXER_Element> condensor(std::vector<LEXER_Element> tokens)
 std::vector<LEXER_Element> sanitizer_primary(std::vector<LEXER_Element> unclean_tokens)
 {
     std::vector<LEXER_Element> san_primary_tokens;
+    std::map<std::string, Token> primaryTokenMap = {
+        {"machine", Token::MACHINE_TOKEN},
+        {"consumes", Token::CONSUMES_TOKEN},
+        {"tape", Token::TAPE_TOKEN},
+        {"relay", Token::RELAY_TOKEN},
+        {"def", Token::DEF_TOKEN},
+        {"ignoreUnknowns", Token::IGNORE_UNKNOWNS_TOKEN},
+        {"onAccept", Token::ON_ACCEPT_TOKEN},
+        {"onReject", Token::ON_REJECT_TOKEN},
+        {"accept", Token::ACCEPT_TOKEN},
+        {"reject", Token::REJECT_TOKEN},
+        {"null", Token::NULL_TOKEN},
+        {"console", Token::CONSOLE_TOKEN},
+        {"import", Token::IMPORT_TOKEN},
+        {"from", Token::IMPORT_FROM_TOKEN}};
+
+    std::map<std::string, Token> dashTokenMap = {
+        {"->", Token::ARROW_RIGHT_TOKEN},
+        {"<-", Token::ARROW_LEFT_TOKEN}};
     for (int i = 0; i < unclean_tokens.size(); i++)
     {
         if (unclean_tokens[i].type == Token::UNKNOWN_CONDENSED_TOKEN)
         {
-            if (unclean_tokens[i].value == "machine")
+            auto it = primaryTokenMap.find(unclean_tokens[i].value);
+            if (it != primaryTokenMap.end())
             {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::MACHINE_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "consumes")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::CONSUMES_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "tape")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::TAPE_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "relay")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::RELAY_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "def")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::DEF_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "ignoreUnknowns")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::IGNORE_UNKNOWNS_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "onAccept")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::ON_ACCEPT_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "onReject")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::ON_REJECT_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "accept")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::ACCEPT_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "reject")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::REJECT_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "null")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::NULL_TOKEN));
-            }
-            else if (unclean_tokens[i].value == "console")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::CONSOLE_TOKEN));
-            }
-            else if(unclean_tokens[i].value == "import")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::IMPORT_TOKEN));
-            }
-            else if(unclean_tokens[i].value == "from")
-            {
-                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, Token::IMPORT_FROM_TOKEN));
+                san_primary_tokens.push_back(LEXER_Element(unclean_tokens[i].value, it->second));
             }
             else
             {
@@ -109,12 +77,12 @@ std::vector<LEXER_Element> sanitizer_primary(std::vector<LEXER_Element> unclean_
         }
         else if (unclean_tokens[i].type == Token::DASH_TOKEN)
         {
-            if (unclean_tokens[i + 1].type == Token::TRANSITION_DIRECTION_RIGHT_TOKEN)
+            if (i + 1 < unclean_tokens.size() && unclean_tokens[i + 1].type == Token::TRANSITION_DIRECTION_RIGHT_TOKEN)
             {
                 san_primary_tokens.push_back(LEXER_Element("->", Token::ARROW_RIGHT_TOKEN));
                 i++; // skip the next token
             }
-            else if (unclean_tokens[i - 1].type == Token::TRANSITION_DIRECTION_LEFT_TOKEN)
+            else if (i > 0 && unclean_tokens[i - 1].type == Token::TRANSITION_DIRECTION_LEFT_TOKEN)
             {
                 san_primary_tokens.pop_back(); // remove the previous token
                 san_primary_tokens.push_back(LEXER_Element("<-", Token::ARROW_LEFT_TOKEN));
@@ -396,21 +364,20 @@ std::vector<Machine> parse(const std::vector<LEXER_Element> tokens)
                         }
                         temp_machine.consumes = Consumes(temp_consumes);
                     }
-      
                 }
                 else if (san_sec[i].type == Token::TAPE_TOKEN)
                 {
                     i += 3;
-              
+
                     while (san_sec[i].type != Token::CPR_TOKEN)
                     {
 
                         if (san_sec[i].type == Token::TAPE_NAME_TOKEN)
                         {
-                            Tape * tape_ref =  nullptr; 
-                            if(san_sec[i+2].value == "#_#")
+                            Tape *tape_ref = nullptr;
+                            if (san_sec[i + 2].value == "#_#")
                             {
-                                tape_ref = new Tape(san_sec[i].value ,"#",0, true);
+                                tape_ref = new Tape(san_sec[i].value, "#", 0, true);
                             }
                             else
                             {
@@ -421,8 +388,6 @@ std::vector<Machine> parse(const std::vector<LEXER_Element> tokens)
                         }
                         i++;
                     }
-                    
-                
                 }
                 else if (san_sec[i].type == Token::DEF_TOKEN)
                 {
@@ -468,14 +433,13 @@ std::vector<Machine> parse(const std::vector<LEXER_Element> tokens)
                     temp_machine.final_states = temp_final_states;
                     temp_machine.blank_symbol = temp_blank_symbol;
                     temp_machine.transitions = temp_transitions;
-          
+
                     i--;
                 }
                 else if (san_sec[i].type == Token::IGNORE_UNKNOWNS_TOKEN)
                 {
                     temp_machine.ignore_unknowns = san_sec[i + 3].value == "accept" ? true : false;
                     i += 3;
-                 
                 }
                 else if (san_sec[i].type == Token::RELAY_TOKEN)
                 {
@@ -511,8 +475,8 @@ std::vector<Machine> parse(const std::vector<LEXER_Element> tokens)
                     temp_relay.to_relay_machine_on_accept = on_accept;
                     temp_relay.to_relay_machine_on_reject = on_reject;
                     temp_machine.relay = temp_relay;
-                
-                    break; 
+
+                    break;
                 }
                 i++;
             }
@@ -521,4 +485,3 @@ std::vector<Machine> parse(const std::vector<LEXER_Element> tokens)
     }
     return GENERATED_machines;
 }
-
