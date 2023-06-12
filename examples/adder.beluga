@@ -1,4 +1,4 @@
-machine(adder) => {
+machine(unary_adder) => {
     consumes : (null)
     tape : ({t0,11B},{t1,1111B},{t2,#_#}) /* #_# indicates infinite tape */
     def : (

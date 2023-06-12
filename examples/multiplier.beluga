@@ -1,0 +1,26 @@
+machine(unary_multiplier) => {
+    consumes: (null)
+    tape: ({t0,11B},{t1,K1111111B},{t2,#_#}) /* #_# indicates infinite tape */
+    def: (
+        {q0,q1,complete}
+        {1,K}
+        {
+            (q0, 1, q0, 1, ->, t0, t1),
+            (q0, 1, q0, 1, ->, t1, t2),
+            (q0, #, q0, 1, ->, t2, t1),
+            (q0, B, q1, B, <-, t1, t1),
+            (q1, 1, q1, 1, <-, t1, t1),
+            (q0, K, q0, K, ->, t1, t1),
+            (q1, K, q0, K, ->, t1, t0),
+            (q0, B, complete, B, ->, t0, t0)
+        }
+        (q0)
+        (B)
+        (complete)
+    )
+    ignoreUnknowns: (accept)
+    relay: {
+        onAccept: (console)
+        onReject: (console)
+    }
+}

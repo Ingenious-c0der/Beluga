@@ -1,12 +1,21 @@
 relays can be a neat way to achieve recursive turing machines. 
 modernize the cpp used (optimization)
+
 concurrent excecution for independent machine tree topologies 
 shift errors to compile time (in C++)
+
 machine imports 
+
 remove consumes? (anyway relay will get the topological sorting job done , consumes can be a entry 
 restricting mechanism , but seems very unncessary)
+
 console input
+
 compilation flags 
-- perf
+- perf // check memory leaks and runtimes for each stage
 - debug //support this 
-- transparent ordering  
+- transparent ordering 
+
+on accept/ on reject => give ability to write <lambda>functions or short aggregators
+
+add flag to visualize turing machine using light weight graphics library 
