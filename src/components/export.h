@@ -5,6 +5,6 @@
 #include "symbol.h"
 #include "tape.h"
 #include "transition.h"
-
+#include "flag.h"
 
 #endif 

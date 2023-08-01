@@ -1,6 +1,7 @@
 #include <vector>
 #include "parser.cpp"
 #include <algorithm>
+#include <chrono>
 // -. check if machine names are unique
 // 1. find if any tm's forward reference is not present
 // 2. Resolve topological ordering using relay and cosumes
@@ -88,7 +89,7 @@ public:
 
     void remove_pair_where_after_name(std::string name)
     {
-        //220 iq or -220 iq ?  removing while iterating in for loop was the biggest PITA
+        // 220 iq or -220 iq ?  removing while iterating in for loop was the biggest PITA
         int counter = 0;
         int active_pair_size = this->pairs.size();
         while (true)
@@ -165,7 +166,7 @@ void machine_unique_name_check(std::vector<Machine> machines)
     }
 }
 
-void combine_tapes(std::string ext_mac_name, std::vector<Tape*> tapes_2 , std::vector<Machine> & machines)
+void combine_tapes(std::string ext_mac_name, std::vector<Tape *> tapes_2, std::vector<Machine> &machines)
 {
 
     int ext_mac_index = -1;
@@ -177,23 +178,22 @@ void combine_tapes(std::string ext_mac_name, std::vector<Tape*> tapes_2 , std::v
             break;
         }
     }
-    if(ext_mac_index == -1)
+    if (ext_mac_index == -1)
     {
         std::string error_name = "Machine name " + ext_mac_name + " is not found while combining tapes";
         throw std::runtime_error(error_name);
     }
-    for(auto t: machines[ext_mac_index].ref_tapes)
+    for (auto t : machines[ext_mac_index].ref_tapes)
     {
-        if(t->get_name() == tapes_2[0]->get_name())
+        if (t->get_name() == tapes_2[0]->get_name())
         {
-            std::string error = "Error Tape Name Clash : Tape name " + t->get_name() + " is not unique while combining tapes for machine "+ ext_mac_name ;
+            std::string error = "Error Tape Name Clash : Tape name " + t->get_name() + " is not unique while combining tapes for machine " + ext_mac_name;
             std::string resolve_error = "To resolve this error , please refer https://github.com/Ingenious-c0der/Beluga/blob/master/documentation.md#error--tape-name-clash-";
             std::cout << error << std::endl;
             std::cout << resolve_error << std::endl;
             exit(1);
         }
     }
-
 
     for (auto tape : tapes_2)
     {
@@ -271,11 +271,11 @@ bool machine_exists_and_consumes(Machine consumer, Machine relays, std::vector<M
 std::vector<Machine> topo_sort(std::vector<Machine> machines)
 {
     std::vector<Machine> sorted_machines;
-    if(machines.size() == 0)
+    if (machines.size() == 0)
     {
         return sorted_machines;
     }
-    else if(machines.size() == 1)
+    else if (machines.size() == 1)
     {
         sorted_machines.push_back(machines[0]);
         return sorted_machines;
@@ -283,24 +283,22 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
     RP_CONTAINER container;
     for (int i = 0; i < machines.size(); i++)
     {
-        //remember ext_mac is not an actual machine, it is just a name reference
+        // remember ext_mac is not an actual machine, it is just a name reference
         for (auto ext_mac : machines[i].relay.to_relay_machine_on_accept)
         {
             if (machine_exists_and_consumes(ext_mac, machines[i], machines))
             {
-                combine_tapes(ext_mac.name, machines[i].ref_tapes , machines);
+                combine_tapes(ext_mac.name, machines[i].ref_tapes, machines);
                 container.add_pair(Resolution_Pair(machines[i], get_machine_by_name(ext_mac.name, machines)));
-               
             }
         }
         for (auto ext_mac : machines[i].relay.to_relay_machine_on_reject)
         {
             if (machine_exists_and_consumes(ext_mac, machines[i], machines))
             {
-                //std::cout << "Machine " << machines[i].name << " relays to " << ext_mac.name << " on reject" << std::endl;
-                combine_tapes(ext_mac.name, machines[i].ref_tapes , machines);
-                container.add_pair(Resolution_Pair(machines[i],get_machine_by_name(ext_mac.name, machines)));
-               
+                // std::cout << "Machine " << machines[i].name << " relays to " << ext_mac.name << " on reject" << std::endl;
+                combine_tapes(ext_mac.name, machines[i].ref_tapes, machines);
+                container.add_pair(Resolution_Pair(machines[i], get_machine_by_name(ext_mac.name, machines)));
             }
         }
     }
@@ -315,11 +313,11 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
             GROSSLY_DEPENDENT_MACHINES.push_back(AFTER[i]);
         }
     }
-   // std::cout<< "Grossly dependent machines: "<< GROSSLY_DEPENDENT_MACHINES.size() << std::endl;
+    // std::cout<< "Grossly dependent machines: "<< GROSSLY_DEPENDENT_MACHINES.size() << std::endl;
 
     int initial_size = machines.size() - GROSSLY_DEPENDENT_MACHINES.size();
-   // std::cout << "Initial size: " << initial_size << std::endl;
-    //std::cout << "Topological sorting" << std::endl;
+    // std::cout << "Initial size: " << initial_size << std::endl;
+    // std::cout << "Topological sorting" << std::endl;
 
     std::vector<std::string> buffer_name_machines;
     while (!sorted)
@@ -371,19 +369,75 @@ std::vector<Machine> topo_sort(std::vector<Machine> machines)
     return sorted_machines;
 }
 
-void execute(std::string filename)
+void execute(std::string filename, std::vector<Flag> flags)
 {
+    bool TIME_DEBUG = false;
+    for (auto flag : flags)
+    {
+        if (flag.type == TIME_DEBUG)
+        {
+            TIME_DEBUG = flag.value;
+        }
+    }
+    auto lex_start = std::chrono::high_resolution_clock::now();
     auto x = lex(filename);
+    auto lex_end = std::chrono::high_resolution_clock::now();
+    auto lex_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(lex_end - lex_start);
+    if (TIME_DEBUG)
+    {
+        std::cout << "Lexing time: " << lex_duration.count() << " nanoseconds" << std::endl;
+    }
+
+    auto parse_start = std::chrono::high_resolution_clock::now();
     std::vector<Machine> machines = parse(x);
+    auto parse_end = std::chrono::high_resolution_clock::now();
+
+    auto parse_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(parse_end - parse_start);
+
+    if (TIME_DEBUG)
+    {
+        std::cout << "Parsing time: " << parse_duration.count() << " nanoseconds" << std::endl;
+    }
+    auto unique_check = std::chrono::high_resolution_clock::now();
     machine_unique_name_check(machines);
+    auto unique_check_end = std::chrono::high_resolution_clock::now();
+    auto unique_check_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(unique_check_end - unique_check);
+
+    if (TIME_DEBUG)
+    {
+        std::cout << "Machine name uniqueness check time: " << unique_check_duration.count() << " nanoseconds" << std::endl;
+    }
+
+    auto topo_start = std::chrono::high_resolution_clock::now();
     machines = topo_sort(machines);
-    for(auto machine : machines){
-      
+    auto topo_end = std::chrono::high_resolution_clock::now();
+    auto topo_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(topo_end - topo_start);
+
+    if (TIME_DEBUG)
+    {
+        std::cout << "Topological sorting time: " << topo_duration.count() << " nanoseconds" << std::endl;
+    }
+
+    for (auto machine : machines)
+    {
+        auto machine_start = std::chrono::high_resolution_clock::now();
         machine.run();
+        auto machine_end = std::chrono::high_resolution_clock::now();
+        auto machine_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(machine_end - machine_start);
+        if (TIME_DEBUG)
+        {
+            std::cout << "Machine " << machine.name << " execution time: " << machine_duration.count() << " nanoseconds" << std::endl;
+        }
+    }
+    auto run_end = std::chrono::high_resolution_clock::now();
+    auto run_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(run_end - lex_start);
+    if (TIME_DEBUG)
+    {
+        std::cout << "Total execution time: " << run_duration.count() << " nanoseconds" << std::endl;
     }
 }
 
-std::vector<Machine> import_pipeline(std::string filename, std::vector<std::string> machine_names)
-{
-
-}
+// not implemented
+// std::vector<Machine> import_pipeline(std::string filename, std::vector<std::string> machine_names)
+// {
+// }
