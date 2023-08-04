@@ -77,7 +77,9 @@ helloWorld! (Accept) :
 outputTape : ^HelloWorld!^
 ```
 
-##### custom syntax highlighting Soon™
+##### custom syntax highlighting is now available!
+Get the vscode extension [here](https://marketplace.visualstudio.com/items?itemName=Ingenious.bluefalltheme)
+
 
 The language is designed to be simple, and easy to understand. In theory , it is capable of solving any problem that can be solved by a turing machine/ digital computer. Beluga supports multi tape turing machines
 
