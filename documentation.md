@@ -10,13 +10,71 @@ Beluga is a Turing Machine simulator, and a Turing Machine compiler. It is desig
 
 ## Current State of Beluga :
 
-As of now (Feb 2023), the language compiles and executes only for a limited tested set of turing machines. The language is still in development, and is not ready for production use in any way.
+As of now (Aug 2023), the language compiles and executes only for a limited tested set of turing machines. The language is still in development, and is not ready for production use in any way.
 To support this language:
 
 - Please create your own turing machines and create a PR to the repo.
 - In the process, if you find any bugs, please create an issue in the repo.
 
 Doing so will help the language grow and mature.
+
+## Okay, but what's the USE?
+Beluga allows the ease to build a turing machines while being as close as possible to their mathematical representation to define them. This allows the user to focus on the logic of the turing machine rather than the syntax of the language. The language is designed to be simple, and easy to understand.
+As of now, I can think of the following two prospects of using Beluga in the near future: 
+### 1. Regular Expressions Matching : 
+While this is a herculian task to achieve, it is possible to achieve this using Beluga. The idea is to build a turing machine which can match a given regular expression in linear time once the machine is contructed.This is a NP problem and linear regex matching as seen in google/re2 is built with the same idea but uses finite automata instead. 
+The turing machine can be pipelined with other turing machines to achieve complex regular expressions.This would require the development of a regex transpiler which can convert a regex to a beluga turing machine, and I am currently working on this whenever I find time.
+
+### 2. Educational Purposes :
+The TM knowledge needed to code in beluga is something which is taught in any Theory of Computation class, you don't need to know any programming language/fundamentals to code in beluga. This makes it a great tool to teach the basics of turing machines to students.
+
+### The race to build the first decimal/binary/unary adder. 
+Again, constructing anything with a TM is a tough shot without having the right constucts. Right now I am planning to develop the constructs which can ease the process of building a universal adder or multiplier while maintaining the simplicity of the language. Once that is in place, this fundamental TM can be used/imported to construct heavier TMs and which will potentially increase the use cases of the language.
+
+
+
+
+
+## Command Line Flags 
+The language will have more command line flags in the future. As of now, the following flags are supported :
+### 1. - t : execution time debug flag 
+The time debug flags allows you to view the time taken for each process when running the .beluga file.The execution time is printed in nanoseconds. The time debug flag is useful to debug the performance of the language and your TM structure.
+Lexing, Parsing, Machine name uniqueness check and Topological sorting are timed for the entire program at once and not for individual machine
+It provides the execution time for each machine, and the total execution time for the program.
+Usage : 
+```c#
+Beluga  <filename.beluga> -t
+```
+Output/s : 
+```c#
+Lexing time: 0 nanoseconds
+Parsing time: 1089000 nanoseconds
+Machine name uniqueness check time: 0 nanoseconds
+Topological sorting time: 0 nanoseconds
+unary_multiplier (Accepted) : 
+t0 : 11B
+t1 : K1111111B
+t2 : 11111111111111
+Machine unary_multiplier execution time: 2014000 nanoseconds
+Total execution time: 11318000 nanoseconds
+```
+```c#
+Lexing time: 0 nanoseconds
+Parsing time: 1210000 nanoseconds
+Machine name uniqueness check time: 0 nanoseconds
+Topological sorting time: 0 nanoseconds
+pipe_1 (Accepted) :
+t0 : 2222222222B
+Machine pipe_1 execution time: 1002000 nanoseconds
+pipe_2 (Accepted) :
+t0 : 3333333333B
+Machine pipe_2 execution time: 913000 nanoseconds
+Total execution time: 10240000 nanoseconds
+```
+
+ 
+
+
 
 ## What are the constructs of Beluga?
 
@@ -117,6 +175,8 @@ relay : {
 Piping different turing machines can be an essential tool to solve complex problems without using complex logic. If turing machine A relays to B and B consumes A , it is logically known that A should execute before B. Two machines or more machines which are tied with this sort of consume-relay relationship will be always topologically executed irrespective of the order in which they are defined in the program. The unrelated machines will be executed in undeterministic order. 
 
 
+
+
 ### FAQs 
 #### Reserved Keywords :
 - consumes
@@ -142,6 +202,23 @@ Piping different turing machines can be an essential tool to solve complex probl
 - :   : Colon Symbol
 - =>  : Fat Arrow Symbol
 - $   : Dollar Symbol
+- #_# : Infinite Tape Symbol
+
+
+### Infinite Tape Symbol (#_#)
+This feature is supported from beluga version 0.0.3 !
+It makes the language more powerful and closer to an actual turing machine repr. You can now represent an infinite tape and use it in your TM!  
+#### Details 
+For a lack of better symbols, the symbol "#_#" is reserved for depicting infinite tapes (Could be changed in the future)
+as seen in examples/infinite_tape.beluga
+You can also have multiple infinite tapes in a single machine.
+```c#
+tape : ({t0,#_#},{t1,ABDBAEW})
+```
+In the above code block, we use #_# to represent an infinite tape. The tape t0 is an infinite tape. The tape t1 is a finite tape.You cannot describe a repeating pattern in the infinite tape as of now. 
+
+#### How does it work?
+The infinite tape is basically implemented internally as a growing vector in both directions as and when the pointer overflows the current scope of the tape. The default element in the infinite tape is the "#" symbol. It can be changed/updated and stored in the tape as any other symbol.
 
 
 ### $  : Dollar Symbol 
