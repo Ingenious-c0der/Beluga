@@ -114,3 +114,6 @@ The path variable for apple silicon machines generally lies in /etc/paths unless
 #### 3. You are good to go!
 
 Run the file as Beluga <filename.beluga>
+
+<img width="698" alt="image" src="https://github.com/Ingenious-c0der/Beluga/assets/76046349/1cb1b5ee-3641-4127-9393-1f00cab0301a">
+
